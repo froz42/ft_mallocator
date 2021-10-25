@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/25 13:28:09 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/25 20:17:16 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/25 20:58:42 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,15 +19,9 @@
 #include "vector.h"
 #include <string.h>
 #include <dlfcn.h>
+#include "alloc_list.h"
 
-typedef struct {
-             const char  *dli_fname;
-             void        *dli_fbase;
-             const char  *dli_sname;
-             void        *dli_saddr;
-} Dl_info;
 
-int dladdr( void *address, Dl_info *dlip );
 int g_malloc_hook_active = 1;
 
 vector_t g_malloc_hook_vector;
@@ -41,14 +35,7 @@ int g_free_count = 0;
 size_t g_fetch;
 int g_fetch_active = 0;
 
-void print_func_name(void *addr)
-{
-	Dl_info info;
-	if (dladdr(addr, &info) && info.dli_sname)
-		dprintf(2, "%s\n", info.dli_sname);
-	else
-		dprintf(2, "no match: %p\n", addr);
-}
+t_alloc_list *g_alloc_list = NULL;
 
 void setup_g_fetch(void)
 {
@@ -80,6 +67,11 @@ void at_exit_hook(void)
 	{
 		print_vector(&g_malloc_hook_vector);
 		free_vector(&g_malloc_hook_vector);
+	}
+	else
+	{
+		print_list(g_alloc_list);
+		clear_list(&g_alloc_list);
 	}
 
 	printf("malloc: %d\n", g_malloc_count);
@@ -116,10 +108,7 @@ void *my_malloc_hook(size_t size, void *caller)
 		if (!find_vector(&g_malloc_hook_vector, caller_address))
 		{
 			if ((caller_address & 0xffff000000000000) == 0)
-			{
-				print_func_name(caller);
 				push_back_vector(&g_malloc_hook_vector, caller_address);
-			}
 		}
 		result = malloc(size);
 	}
@@ -132,7 +121,10 @@ void *my_malloc_hook(size_t size, void *caller)
 			result = malloc(size);
 	}
 	if (result != NULL)
+	{
+		push_list(&g_alloc_list, result, size, caller);
 		g_malloc_count++;
+	}
 	g_malloc_hook_active = 1;
 	return (result);
 }
@@ -162,11 +154,18 @@ void *calloc(size_t nmemb, size_t size)
 	return (__libc_calloc(nmemb, size));
 }
 
+void my_free_hook(void *ptr)
+{
+	pop_list(&g_alloc_list, ptr);
+}
+
+
 void free(void *ptr)
 {
 	if (g_malloc_hook_active)
+	{
+		my_free_hook(ptr);
 		g_free_count++;
-	g_malloc_hook_active = 0;
+	}
 	__libc_free(ptr);
-	g_malloc_hook_active = 1;
 }

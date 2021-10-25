@@ -2,3 +2,4 @@
 *.d
 *.a
 malloc_test
+*.log

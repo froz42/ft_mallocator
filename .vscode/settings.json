@@ -5,6 +5,7 @@
 		"vector": "c",
 		"kernel.h": "c",
 		"dlfcn.h": "c",
-		"string.h": "c"
+		"string.h": "c",
+		"alloc_list.h": "c"
 	}
 }
