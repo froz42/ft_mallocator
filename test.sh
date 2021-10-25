@@ -1,3 +1,15 @@
+echo "    __  ______    __    __    ____  _________  __________  ____ "
+echo "   /  |/  /   |  / /   / /   / __ \\/ ____/   |/_  __/ __ \\/ __ \\"
+echo "  / /|_/ / /| | / /   / /   / / / / /   / /| | / / / / / / /_/ /"
+echo " / /  / / ___ |/ /___/ /___/ /_/ / /___/ ___ |/ / / /_/ / _, _/ "
+echo "/_/  /_/_/  |_/_____/_____/\\____/\\____/_/  |_/_/  \\____/_/ |_|  "
+echo
+echo 'By tmatis <tmatis@student.42.fr>'
+echo
+                                                                
+
+
+
 # COLORS VAR
 
 GREEN='\033[0;32m'
@@ -36,17 +48,17 @@ nb_free=$(head -n 2 <<< "$FETCH_OUT" | tail -n 1 | cut -d ':' -f 2 | xargs)
 address_list=$(head -n 3 <<< "$FETCH_OUT" | tail -n 1)
 is_leaking=0
 echo -e "${GREEN}done${NC}"
+echo
 
 # check if nb_free == nb_malloc
 if [ $nb_free -eq $nb_malloc ]; then
-	echo -e "${BOLD}leak: ${GREEN}[OK]${NC} $nb_free free / $nb_malloc malloc ${NC}"
+	echo -e "${BOLD}leak: ${GREEN}[OK]${NC} (./logs/fetch_out.log)"
 else
-	echo -e "${BOLD}leak: ${RED}[KO]${NC} $nb_free free / $nb_malloc malloc ${CYAN}<<<${NC} check with ${BOLD}valgrind${NC}"
+	echo -e "${BOLD}leak: ${RED}[KO]${NC} (./logs/fetch_out.log) ${CYAN}<<<${NC} check with ${BOLD}valgrind${NC}"
 	is_leaking=1
 fi
 
-echo -e "${BOLD}Malloc list:${NC}"
-echo "$address_list"
+echo
 
 # for each address
 for address in $address_list; do
@@ -54,18 +66,18 @@ for address in $address_list; do
 	echo $address > ./addr.tmp
 	./malloc_test &> ./logs/log_$address.log
 	ret=$?
-	# check if "ERROR: UndefinedBehaviorSanitizer" in ./logs/log_$address.log
 	if grep -q "ERROR: UndefinedBehaviorSanitizer" ./logs/log_$address.log; then
 		echo -e " ${RED}[KO]${NC} ./logs/log_$address.log"
 	else
-		echo -e " ${GREEN}[OK]${NC} ./logs/log_$address.log"
+		echo -e " ${GREEN}[OK]${NC}"
 		log_content=$(cat ./logs/log_$address.log)
 		nb_malloc=$(head -n 1 <<< "$log_content" | cut -d ':' -f 2 | xargs)
 		nb_free=$(head -n 2 <<< "$log_content" | tail -n 1 | cut -d ':' -f 2 | xargs)
 		# $nb_free != $nb_malloc && is_leaking == 1
 		if [ $nb_free -ne $nb_malloc ]; then
 			if [ $is_leaking -eq 0 ]; then
-				echo -e " ${YELLOW} Warning >>> ${NC} you do not free everything when this malloc crash (see log)"
+				echo -ne " ${YELLOW} Warning >>> ${NC} "
+				echo "you do not free everything when this malloc crash (see ./logs/log_$address.log)"
 			fi
 		fi
 

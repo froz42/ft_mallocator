@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/25 20:25:29 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/25 22:06:48 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/25 22:29:26 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ char const *get_func_name(void *addr)
 	if (dladdr(addr, &info) && info.dli_sname)
 		return (info.dli_sname);
 	else
-		return ("unkwow");
+		return ("unknown");
 }
 
 void push_list(t_alloc_list **list, void *ptr, size_t size, void *caller)
