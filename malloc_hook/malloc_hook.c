@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/25 13:28:09 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/25 15:26:03 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/25 15:52:29 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,20 +29,19 @@ int g_at_exit_hook_active = 0;
 int g_malloc_count = 0;
 int g_free_count = 0;
 
-
 void at_exit_hook(void)
 {
 	g_malloc_hook_active = 0;
 	g_free_hook_active = 0;
-	print_vector(&g_malloc_hook_vector);
-	free_vector(&g_malloc_hook_vector);
-
-	if (g_malloc_count == g_free_count)
-		printf("No leak detected\n");
-	else
-		printf("Leak detected\n");
-	printf("Malloc count: %d\n", g_malloc_count);
-	printf("Free count: %d\n", g_free_count);
+	
+	if (FETCH_RUN)
+	{
+		print_vector(&g_malloc_hook_vector);
+		free_vector(&g_malloc_hook_vector);
+	}
+	
+	printf("malloc: %d\n", g_malloc_count);
+	printf("free: %d\n", g_free_count);
 }
 
 void *my_malloc_hook(size_t size, void *caller)

@@ -6,7 +6,7 @@
 #    By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/07/14 10:00:31 by tmatis            #+#    #+#              #
-#    Updated: 2021/10/25 15:30:25 by tmatis           ###   ########.fr        #
+#    Updated: 2021/10/25 15:50:08 by tmatis           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,6 +19,8 @@ NAME	= libmallocator.a
 CC 		= clang
 CFLAGS	= -Wall -Wextra -Werror -g
 DFLAGS	= -MMD -MF $(@:.o=.d)
+
+FETCH_RUN = 0
 
 ################################################################################
 #                                 PROGRAM'S SRCS                               #
@@ -54,7 +56,7 @@ $(NAME):	${OBJS}
 
 objs/%.o: 	$(SRCS_PATH)/%$(FILE_EXTENSION)
 			@mkdir -p $(dir $@)
-			$(CC) $(CFLAGS) $(DFLAGS) -c $< -o $@ -I$(INCLUDE_PATH)
+			$(CC) $(CFLAGS) $(DFLAGS) -c $< -o $@ -I$(INCLUDE_PATH) -D FETCH_RUN=$(FETCH_RUN)
 
 clean:		
 			@rm -rf objs
