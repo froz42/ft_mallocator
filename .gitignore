@@ -3,3 +3,4 @@
 *.a
 malloc_test
 *.log
+.vscode

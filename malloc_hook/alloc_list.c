@@ -6,14 +6,14 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/25 20:25:29 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/25 20:56:33 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/25 21:10:22 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "alloc_list.h"
 #include <stdio.h>
 
-static char const *get_func_name(void *addr)
+char const *get_func_name(void *addr)
 {
 	Dl_info info;
 	if (dladdr(addr, &info) && info.dli_sname)

@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/25 13:28:09 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/25 20:58:42 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/25 21:19:38 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,8 @@ void at_exit_hook(void)
 {
 	g_malloc_hook_active = 0;
 
+	printf("malloc: %d\n", g_malloc_count);
+	printf("free: %d\n", g_free_count);
 	if (g_fetch == 0)
 	{
 		print_vector(&g_malloc_hook_vector);
@@ -73,9 +75,6 @@ void at_exit_hook(void)
 		print_list(g_alloc_list);
 		clear_list(&g_alloc_list);
 	}
-
-	printf("malloc: %d\n", g_malloc_count);
-	printf("free: %d\n", g_free_count);
 }
 
 void *my_malloc_hook(size_t size, void *caller)
@@ -105,10 +104,13 @@ void *my_malloc_hook(size_t size, void *caller)
 			init_vector(&g_malloc_hook_vector);
 			g_malloc_vector_init = 1;
 		}
-		if (!find_vector(&g_malloc_hook_vector, caller_address))
+		pair_t pair;
+		pair.data = caller_address;
+		pair.caller = caller;
+		if (!find_vector(&g_malloc_hook_vector, &pair))
 		{
 			if ((caller_address & 0xffff000000000000) == 0)
-				push_back_vector(&g_malloc_hook_vector, caller_address);
+				push_back_vector(&g_malloc_hook_vector, &pair);
 		}
 		result = malloc(size);
 	}
@@ -156,16 +158,16 @@ void *calloc(size_t nmemb, size_t size)
 
 void my_free_hook(void *ptr)
 {
+	g_malloc_hook_active = 0;
 	pop_list(&g_alloc_list, ptr);
+	g_free_count++;
+	g_malloc_hook_active = 1;
 }
 
 
 void free(void *ptr)
 {
 	if (g_malloc_hook_active)
-	{
 		my_free_hook(ptr);
-		g_free_count++;
-	}
 	__libc_free(ptr);
 }

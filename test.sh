@@ -21,17 +21,17 @@ echo "0x0" > ./addr.tmp
 clang -fsanitize=undefined -Wall -Wextra -Werror -rdynamic -g -o malloc_test main.c -L. -lmallocator
 
 FETCH_OUT=$(./malloc_test)
-
+echo $FETCH_OUT > ./logs/fetch_out.log
 # format is
-# <address> <address> <address> <address> etc..
-# free: nb_free
 # malloc: nb_malloc
+# free: nb_free
+# <address> <address> <address> <address> etc..
+# leaked
 
 # we parse
-
-address_list=$(head -n 1 <<< "$FETCH_OUT")
-nb_free=$(tail -n 1 <<< "$FETCH_OUT" | cut -d ':' -f 2 | xargs)
-nb_malloc=$(head -n 2 <<< "$FETCH_OUT" | tail -n 1 | cut -d ':' -f 2 | xargs)
+nb_malloc=$(head -n 1 <<< "$FETCH_OUT" | cut -d ':' -f 2 | xargs)
+nb_free=$(head -n 2 <<< "$FETCH_OUT" | tail -n 1 | cut -d ':' -f 2 | xargs)
+address_list=$(tail -n +3 <<< "$FETCH_OUT")
 is_leaking=0
 echo -e "${GREEN}done${NC}"
 
@@ -58,8 +58,8 @@ for address in $address_list; do
 	else
 		echo -e " ${GREEN}[OK]${NC}"
 		log_content=$(cat ./logs/log_$address.log)
-		nb_malloc=$(head -n 1 <<< "$log_content" | cut -d ':' -f 2 | xargs)
-		nb_free=$(tail -n 1 <<< "$log_content" | tail -n 1 | cut -d ':' -f 2 | xargs)
+		nb_malloc=$(head -n 1 <<< "$FETCH_OUT" | cut -d ':' -f 2 | xargs)
+		nb_free=$(head -n 2 <<< "$FETCH_OUT" | tail -n 1 | cut -d ':' -f 2 | xargs)
 		# $nb_free != $nb_malloc && is_leaking == 1
 		if [ $nb_free -ne $nb_malloc ]; then
 			if [ $is_leaking -eq 0 ]; then
