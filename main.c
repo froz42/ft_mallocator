@@ -4,11 +4,15 @@
 int main(void)
 {
 	void *dest = calloc(10000000, 1);
+	void *src = calloc(10000000, 1);
 
-	if (dest == NULL)
-	{
-		return EXIT_FAILURE;
-	}
+	if (!dest)
+		return 1;
+	
+	if (!src)
+		return 1;
+	free(src);
+
 	bzero(dest, 10000000);
 	free(dest);
 	dest = malloc(10);

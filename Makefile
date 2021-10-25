@@ -6,7 +6,7 @@
 #    By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/07/14 10:00:31 by tmatis            #+#    #+#              #
-#    Updated: 2021/10/25 17:30:17 by tmatis           ###   ########.fr        #
+#    Updated: 2021/10/25 20:13:49 by tmatis           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,7 +17,7 @@
 
 NAME	= libmallocator.a
 CC 		= clang
-CFLAGS	= -Wall -Wextra -Werror -g
+CFLAGS	= -Wall -Wextra -Werror -g3
 DFLAGS	= -MMD -MF $(@:.o=.d)
 
 FETCH_ADDR = 0

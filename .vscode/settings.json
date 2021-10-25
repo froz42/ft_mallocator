@@ -3,6 +3,8 @@
 		"unistd.h": "c",
 		"execinfo.h": "c",
 		"vector": "c",
-		"kernel.h": "c"
+		"kernel.h": "c",
+		"dlfcn.h": "c",
+		"string.h": "c"
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/25 13:28:09 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/25 18:34:12 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/25 20:17:16 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,16 @@
 #include "malloc_hook.h"
 #include "vector.h"
 #include <string.h>
+#include <dlfcn.h>
 
+typedef struct {
+             const char  *dli_fname;
+             void        *dli_fbase;
+             const char  *dli_sname;
+             void        *dli_saddr;
+} Dl_info;
+
+int dladdr( void *address, Dl_info *dlip );
 int g_malloc_hook_active = 1;
 
 vector_t g_malloc_hook_vector;
@@ -32,6 +41,15 @@ int g_free_count = 0;
 size_t g_fetch;
 int g_fetch_active = 0;
 
+void print_func_name(void *addr)
+{
+	Dl_info info;
+	if (dladdr(addr, &info) && info.dli_sname)
+		dprintf(2, "%s\n", info.dli_sname);
+	else
+		dprintf(2, "no match: %p\n", addr);
+}
+
 void setup_g_fetch(void)
 {
 	int fd = open("./addr.tmp", O_RDONLY);
@@ -40,7 +58,7 @@ void setup_g_fetch(void)
 		perror("open");
 		exit(EXIT_FAILURE);
 	}
-	
+
 	char buffer[100];
 	size_t read_bytes = read(fd, buffer, sizeof(buffer) - 1);
 	if (read_bytes < 0)
@@ -54,7 +72,6 @@ void setup_g_fetch(void)
 	close(fd);
 }
 
-
 void at_exit_hook(void)
 {
 	g_malloc_hook_active = 0;
@@ -64,7 +81,7 @@ void at_exit_hook(void)
 		print_vector(&g_malloc_hook_vector);
 		free_vector(&g_malloc_hook_vector);
 	}
-	
+
 	printf("malloc: %d\n", g_malloc_count);
 	printf("free: %d\n", g_free_count);
 }
@@ -74,7 +91,7 @@ void *my_malloc_hook(size_t size, void *caller)
 	void *result;
 
 	g_malloc_hook_active = 0;
-	
+
 	if (!g_at_exit_hook_active)
 	{
 		g_at_exit_hook_active = 1;
@@ -88,7 +105,7 @@ void *my_malloc_hook(size_t size, void *caller)
 	}
 
 	size_t caller_address = (size_t)(&_end) - (size_t)caller;
-	
+
 	if (g_fetch == 0)
 	{
 		if (!g_malloc_vector_init)
@@ -99,7 +116,10 @@ void *my_malloc_hook(size_t size, void *caller)
 		if (!find_vector(&g_malloc_hook_vector, caller_address))
 		{
 			if ((caller_address & 0xffff000000000000) == 0)
-			push_back_vector(&g_malloc_hook_vector, caller_address);
+			{
+				print_func_name(caller);
+				push_back_vector(&g_malloc_hook_vector, caller_address);
+			}
 		}
 		result = malloc(size);
 	}
@@ -116,8 +136,6 @@ void *my_malloc_hook(size_t size, void *caller)
 	g_malloc_hook_active = 1;
 	return (result);
 }
-
-
 
 void *malloc(size_t size)
 {
@@ -147,7 +165,7 @@ void *calloc(size_t nmemb, size_t size)
 void free(void *ptr)
 {
 	if (g_malloc_hook_active)
-		g_free_count++;	
+		g_free_count++;
 	g_malloc_hook_active = 0;
 	__libc_free(ptr);
 	g_malloc_hook_active = 1;
