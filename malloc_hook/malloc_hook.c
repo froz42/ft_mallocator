@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/25 13:28:09 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/25 21:19:38 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/25 22:11:21 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ void at_exit_hook(void)
 		print_vector(&g_malloc_hook_vector);
 		free_vector(&g_malloc_hook_vector);
 	}
-	else
+	if (g_alloc_list)
 	{
 		print_list(g_alloc_list);
 		clear_list(&g_alloc_list);

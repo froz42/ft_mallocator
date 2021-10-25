@@ -8,32 +8,10 @@ int main(void)
 
 	if (!dest)
 		return 1;
-	
 	if (!src)
 		return 1;
+	memcpy(dest, src, 10000000);
+	free(dest);
 	free(src);
-
-	bzero(dest, 10000000);
-	free(dest);
-	dest = malloc(10);
-	if (!dest)
-		return 1;
-	memset(dest, 0, 10);
-	free(dest);
-	dest = malloc(10000);
-	if (!dest)
-		return 1;
-	memset(dest, 0, 10000);
-
-	free(dest);
-	int i = 10;
-	while (i--)
-	{
-		dest = malloc(10000000);
-		if (!dest)
-			return 1;
-		bzero(dest, 10000000);
-		free(dest);
-	}
 	return 0;
 }

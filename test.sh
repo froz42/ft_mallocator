@@ -20,18 +20,20 @@ echo "0x0" > ./addr.tmp
 
 clang -fsanitize=undefined -Wall -Wextra -Werror -rdynamic -g -o malloc_test main.c -L. -lmallocator
 
-FETCH_OUT=$(./malloc_test)
-echo $FETCH_OUT > ./logs/fetch_out.log
+./malloc_test > ./logs/fetch_out.log
+
+FETCH_OUT=$(cat ./logs/fetch_out.log)
 # format is
 # malloc: nb_malloc
 # free: nb_free
 # <address> <address> <address> <address> etc..
 # leaked
+# leaked
 
 # we parse
 nb_malloc=$(head -n 1 <<< "$FETCH_OUT" | cut -d ':' -f 2 | xargs)
 nb_free=$(head -n 2 <<< "$FETCH_OUT" | tail -n 1 | cut -d ':' -f 2 | xargs)
-address_list=$(tail -n +3 <<< "$FETCH_OUT")
+address_list=$(head -n 3 <<< "$FETCH_OUT" | tail -n 1)
 is_leaking=0
 echo -e "${GREEN}done${NC}"
 
@@ -54,16 +56,16 @@ for address in $address_list; do
 	ret=$?
 	# check if "ERROR: UndefinedBehaviorSanitizer" in ./logs/log_$address.log
 	if grep -q "ERROR: UndefinedBehaviorSanitizer" ./logs/log_$address.log; then
-		echo -e " ${RED}[KO]${NC}"
+		echo -e " ${RED}[KO]${NC} ./logs/log_$address.log"
 	else
-		echo -e " ${GREEN}[OK]${NC}"
+		echo -e " ${GREEN}[OK]${NC} ./logs/log_$address.log"
 		log_content=$(cat ./logs/log_$address.log)
-		nb_malloc=$(head -n 1 <<< "$FETCH_OUT" | cut -d ':' -f 2 | xargs)
-		nb_free=$(head -n 2 <<< "$FETCH_OUT" | tail -n 1 | cut -d ':' -f 2 | xargs)
+		nb_malloc=$(head -n 1 <<< "$log_content" | cut -d ':' -f 2 | xargs)
+		nb_free=$(head -n 2 <<< "$log_content" | tail -n 1 | cut -d ':' -f 2 | xargs)
 		# $nb_free != $nb_malloc && is_leaking == 1
 		if [ $nb_free -ne $nb_malloc ]; then
 			if [ $is_leaking -eq 0 ]; then
-				echo -e " ${YELLOW} Warning >>> ${NC} you do not free everything when this malloc crash"
+				echo -e " ${YELLOW} Warning >>> ${NC} you do not free everything when this malloc crash (see log)"
 			fi
 		fi
 
