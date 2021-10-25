@@ -2,6 +2,7 @@
 	"files.associations": {
 		"unistd.h": "c",
 		"execinfo.h": "c",
-		"vector": "c"
+		"vector": "c",
+		"kernel.h": "c"
 	}
 }

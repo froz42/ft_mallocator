@@ -6,7 +6,7 @@
 #    By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/07/14 10:00:31 by tmatis            #+#    #+#              #
-#    Updated: 2021/10/25 15:50:08 by tmatis           ###   ########.fr        #
+#    Updated: 2021/10/25 17:30:17 by tmatis           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,7 @@ CC 		= clang
 CFLAGS	= -Wall -Wextra -Werror -g
 DFLAGS	= -MMD -MF $(@:.o=.d)
 
-FETCH_RUN = 0
+FETCH_ADDR = 0
 
 ################################################################################
 #                                 PROGRAM'S SRCS                               #
@@ -56,7 +56,7 @@ $(NAME):	${OBJS}
 
 objs/%.o: 	$(SRCS_PATH)/%$(FILE_EXTENSION)
 			@mkdir -p $(dir $@)
-			$(CC) $(CFLAGS) $(DFLAGS) -c $< -o $@ -I$(INCLUDE_PATH) -D FETCH_RUN=$(FETCH_RUN)
+			$(CC) $(CFLAGS) $(DFLAGS) -c $< -o $@ -I$(INCLUDE_PATH) -D FETCH_ADDR=$(FETCH_ADDR)
 
 clean:		
 			@rm -rf objs
