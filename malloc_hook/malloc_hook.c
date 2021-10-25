@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/25 13:28:09 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/25 18:23:25 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/25 18:34:12 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include <fcntl.h>
 #include "malloc_hook.h"
 #include "vector.h"
+#include <string.h>
 
 int g_malloc_hook_active = 1;
 
@@ -105,18 +106,18 @@ void *my_malloc_hook(size_t size, void *caller)
 	else
 	{
 		if (g_fetch == caller_address)
-		{
 			// block malloc
 			result = NULL;
-		}
 		else
 			result = malloc(size);
 	}
-	//printf("malloc called at: %#lx\n", caller_address);
-	g_malloc_count++;
+	if (result != NULL)
+		g_malloc_count++;
 	g_malloc_hook_active = 1;
 	return (result);
 }
+
+
 
 void *malloc(size_t size)
 {
@@ -128,12 +129,23 @@ void *malloc(size_t size)
 	return (__libc_malloc(size));
 }
 
-
-void free(void *ptr)
+void *calloc(size_t nmemb, size_t size)
 {
 	void *caller;
 
 	caller = __builtin_return_address(0);
+	if (g_malloc_hook_active)
+	{
+		char *result = my_malloc_hook(nmemb * size, caller);
+		if (result)
+			memset(result, 0, nmemb * size);
+		return (result);
+	}
+	return (__libc_calloc(nmemb, size));
+}
+
+void free(void *ptr)
+{
 	if (g_malloc_hook_active)
 		g_free_count++;	
 	g_malloc_hook_active = 0;
