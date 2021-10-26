@@ -9,7 +9,7 @@ echo
                                                                 
 
 #CONFIG 
-args=""
+args="./maps/test.ber"
 
 
 # COLORS VAR
@@ -64,7 +64,7 @@ echo
 # for each address
 for address in $address_list; do
 	echo -en "${BOLD}Checking malloc at address: ${CYAN}$address${NC}"
-	echo $address > ./addr.tmp
+	echo $address > ./.addr.tmp
 	./malloc_test $args &> ./ft_mallocator/logs/log_$address.log
 	ret=$?
 	if grep -q "ERROR: UndefinedBehaviorSanitizer" ./ft_mallocator/logs/log_$address.log; then
