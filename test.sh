@@ -67,7 +67,7 @@ for address in $address_list; do
 	echo $address > ./addr.tmp
 	./malloc_test $args &> ./ft_mallocator/logs/log_$address.log
 	ret=$?
-	if grep -q "ERROR: UndefinedBehaviorSanitizer" ./logs/log_$address.log; then
+	if grep -q "ERROR: UndefinedBehaviorSanitizer" ./ft_mallocator/logs/log_$address.log; then
 		echo -e " ${RED}[KO]${NC} ./ft_mallocator/logs/log_$address.log"
 	else
 		echo -e " ${GREEN}[OK]${NC}"
