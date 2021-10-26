@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/25 14:01:55 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/26 14:29:43 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/26 16:52:26 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ void print_vector(vector_t *vector)
 	printf("address: ");
 	while (i < vector->size)
 	{
-		printf("%#zx(%s) ", vector->data[i].data,
+		dprintf(g_fd_out, "%#zx(%s) ", vector->data[i].data,
 			get_func_name(vector->data[i].caller));
 		i++;
 	}

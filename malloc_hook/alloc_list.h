@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/25 20:24:09 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/26 13:21:39 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/26 16:51:13 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,8 @@ typedef struct
 	const char *dli_sname;
 	void *dli_saddr;
 } Dl_info;
+
+extern int g_fd_out;
 
 int dladdr(void *address, Dl_info *dlip);
 char const *get_func_name(void *addr);

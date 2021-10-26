@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/25 13:28:09 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/26 16:17:46 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/26 17:09:36 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,11 +32,13 @@ int g_at_exit_hook_active = 0;
 size_t g_fetch;
 int g_fetch_active = 0;
 
+int g_fd_out = -1;
+
 t_alloc_list *g_alloc_list = NULL;
 
 void setup_g_fetch(void)
 {
-	int fd = open("./.addr.tmp", O_RDONLY);
+	int fd = open("./ft_mallocator/addr.tmp", O_RDONLY);
 	if (fd < 0)
 	{
 		perror("open");
@@ -56,15 +58,26 @@ void setup_g_fetch(void)
 	close(fd);
 }
 
+void setup_g_fd_out(void)
+{
+	g_fd_out = open("./ft_mallocator/res.tmp", O_WRONLY | O_CREAT, 0644);
+	if (g_fd_out < 0)
+	{
+		perror("open");
+		exit(EXIT_FAILURE);
+	}
+}
+
 void at_exit_hook(void)
 {
 	g_malloc_hook_active = 0;
-	printf("\n\n###FT_MALLOCATOR###\n");
+	dprintf(g_fd_out, "\n\n###FT_MALLOCATOR###\n");
 	if (g_alloc_list)
 		print_list(g_alloc_list);
-	printf("leaked bloc: %zu\n", size_list(g_alloc_list));
+	dprintf(g_fd_out, "leaked bloc: %zu\n", size_list(g_alloc_list));
 	if (g_fetch == 0)
 		print_vector(&g_malloc_hook_vector);
+	close(g_fd_out);
 }
 
 int	should_ignore(void *caller)
@@ -92,11 +105,8 @@ void *my_malloc_hook(size_t size, void *caller)
 
 	g_malloc_hook_active = 0;
 
-	if (!g_at_exit_hook_active)
-	{
-		g_at_exit_hook_active = 1;
-		atexit(at_exit_hook);
-	}
+	if (g_fd_out == -1)
+		setup_g_fd_out();
 
 	if (!g_fetch_active)
 	{
@@ -104,6 +114,11 @@ void *my_malloc_hook(size_t size, void *caller)
 		setup_g_fetch();
 	}
 
+	if (!g_at_exit_hook_active)
+	{
+		g_at_exit_hook_active = 1;
+		atexit(at_exit_hook);
+	}
 	size_t caller_address = (size_t)(&_end) - (size_t)caller;
 
 	if (g_fetch == 0)

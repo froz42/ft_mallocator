@@ -16,7 +16,7 @@ then
 fi
 
 #CONFIG 
-args="test_maps/t1.fdf"
+args=""
 
 
 # COLORS VAR
@@ -36,17 +36,14 @@ mkdir ./logs
 
 make re FETCH_ADDR=0 > /dev/null
 
-
-
-
 # need those
 cd ..
 
-echo "0x0" > ./.addr.tmp
+echo "0x0" > ./ft_mallocator/addr.tmp
 
 echo -ne "${BOLD}Compiling ... ${NC}"
 
-make malloc_test &> ./ft_mallocator/logs/compilation.log # -fsanitize=undefined -rdynamic -g -L./ft_mallocator -lmallocator
+make fclean &> /dev/null && make malloc_test &> ./ft_mallocator/logs/compilation.log # -fsanitize=undefined -rdynamic -g -L./ft_mallocator -lmallocator
 ret=$?
 
 if [ $ret -ne 0 ]; then
@@ -58,7 +55,11 @@ fi
 
 echo -ne "${BOLD}Fetching mallocs ... ${NC}"
 
-./malloc_test $args &> ./ft_mallocator/logs/fetch_out.log
+./malloc_test < tests/parts/large_test.sh &> ./ft_mallocator/logs/fetch_out.log
+
+cat ./ft_mallocator/res.tmp >> ./ft_mallocator/logs/fetch_out.log
+
+rm ./ft_mallocator/res.tmp
 
 FETCH_OUT=$(cat ./ft_mallocator/logs/fetch_out.log | tail -n 2)
 
@@ -82,9 +83,11 @@ echo
 # for each address
 for address in $address_list; do
 	echo -en "${BOLD}Checking malloc at address: ${CYAN}$address${NC}"
-	echo $address > ./.addr.tmp
-	./malloc_test $args &> ./ft_mallocator/logs/log_$address.log
+	echo $address > ./ft_mallocator/addr.tmp
+	./malloc_test < tests/parts/large_test.sh &> ./ft_mallocator/logs/log_$address.log
 	ret=$?
+	cat ./ft_mallocator/res.tmp >> ./ft_mallocator/logs/log_$address.log
+	rm ./ft_mallocator/res.tmp
 	if grep -q "ERROR: UndefinedBehaviorSanitizer" ./ft_mallocator/logs/log_$address.log; then
 		echo -e " ${RED}[KO]${NC} ./ft_mallocator/logs/log_$address.log"
 	else
@@ -102,5 +105,5 @@ for address in $address_list; do
 	fi
 done
 
-rm ./.addr.tmp
+rm ./ft_mallocator/addr.tmp
 
