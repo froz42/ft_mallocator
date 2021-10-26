@@ -6,12 +6,13 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/26 19:43:18 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/26 19:43:53 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/26 19:56:11 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "utils_hook.h"
 #include <stdlib.h>
+#include <string.h>
 
 char const *get_func_name(void *addr)
 {
