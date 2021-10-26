@@ -46,7 +46,7 @@ FETCH_OUT=$(cat ./ft_mallocator/logs/fetch_out.log | tail -n 2)
 
 # we parse
 nb_leaked_block=$(head -n 1 <<< "$FETCH_OUT" | cut -d ':' -f 2 | xargs)
-address_list=$(head -n 2 <<< "$FETCH_OUT" | tail -n 1)
+address_list=$(head -n 2 <<< "$FETCH_OUT" | tail -n 1 | cut -d ':' -f 2 | xargs)
 is_leaking=0
 echo -e "${GREEN}done${NC}"
 echo
@@ -84,5 +84,5 @@ for address in $address_list; do
 	fi
 done
 
-rm ./.addr.tmp
+#rm ./.addr.tmp
 

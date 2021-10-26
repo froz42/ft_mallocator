@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/25 13:28:09 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/26 13:30:02 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/26 14:38:11 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,24 @@ void at_exit_hook(void)
 		print_vector(&g_malloc_hook_vector);
 }
 
+int	should_ignore(void *caller)
+{
+	const char *func_name = get_func_name(caller);
+	
+	char const *ignore_func_name[] =
+	{
+		"_IO_file_doallocate",
+		"_dl_allocate_tls",
+		NULL
+	};
+	for (size_t i = 0; ignore_func_name[i]; i++)
+	{
+		if (!strcmp(func_name, ignore_func_name[i]))
+			return (1);
+	}
+	return (0);
+}
+
 void *my_malloc_hook(size_t size, void *caller)
 {
 	void *result;
@@ -112,7 +130,7 @@ void *my_malloc_hook(size_t size, void *caller)
 		else
 			result = malloc(size);
 	}
-	if (result != NULL && strcmp(get_func_name(caller), "_IO_file_doallocate"))
+	if (result != NULL && !should_ignore(caller))
 		push_list(&g_alloc_list, result, size, caller);
 	g_malloc_hook_active = 1;
 	return (result);
