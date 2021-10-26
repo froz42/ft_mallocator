@@ -84,5 +84,5 @@ for address in $address_list; do
 	fi
 done
 
-rm ./addr.tmp
+rm ./.addr.tmp
 

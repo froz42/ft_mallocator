@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/25 13:28:09 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/26 13:24:15 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/26 13:30:02 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ t_alloc_list *g_alloc_list = NULL;
 
 void setup_g_fetch(void)
 {
-	int fd = open("./addr.tmp", O_RDONLY);
+	int fd = open("./.addr.tmp", O_RDONLY);
 	if (fd < 0)
 	{
 		perror("open");
