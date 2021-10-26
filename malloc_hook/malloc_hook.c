@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/25 13:28:09 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/26 19:25:52 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/26 19:45:00 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,23 +15,18 @@
 #include <execinfo.h>
 #include <errno.h>
 #include <fcntl.h>
-#include "malloc_hook.h"
-#include "vector.h"
 #include <string.h>
 #include <dlfcn.h>
-#include "alloc_list.h"
+#include "utils_hook.h"
+#include "malloc_hook.h"
 
 
 int g_malloc_hook_active = 1;
 
-vector_t g_malloc_hook_vector;
-
-int g_malloc_vector_init = 0;
 int g_at_exit_hook_active = 0;
 
-int g_fd_out = -1;
+int g_fd_out = -1; // ./ft_mallocator/res.tmp
 
-t_alloc_list *g_alloc_list = NULL;
 
 void setup_g_fetch(void)
 {
@@ -53,24 +48,6 @@ void at_exit_hook(void)
 	
 }
 
-int	should_ignore(void *caller)
-{
-	const char *func_name = get_func_name(caller);
-	
-	char const *ignore_func_name[] =
-	{
-		"_IO_file_doallocate",
-		"_dl_allocate_tls",
-		"unknown",
-		NULL
-	};
-	for (size_t i = 0; ignore_func_name[i]; i++)
-	{
-		if (!strcmp(func_name, ignore_func_name[i]))
-			return (1);
-	}
-	return (0);
-}
 
 void *my_malloc_hook(size_t size, void *caller)
 {
@@ -118,7 +95,6 @@ void *calloc(size_t nmemb, size_t size)
 void my_free_hook(void *ptr)
 {
 	g_malloc_hook_active = 0;
-	pop_list(&g_alloc_list, ptr);
 	g_malloc_hook_active = 1;
 }
 
