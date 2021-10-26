@@ -16,7 +16,7 @@ then
 fi
 
 #CONFIG 
-args="4 800 200 200 3"
+args="test_maps/t1.fdf"
 
 
 # COLORS VAR

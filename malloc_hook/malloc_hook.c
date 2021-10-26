@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/25 13:28:09 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/26 15:26:36 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/26 16:17:46 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,8 +126,11 @@ void *my_malloc_hook(size_t size, void *caller)
 	else
 	{
 		if (g_fetch == caller_address)
-			// block malloc
+		{
+			// block malloc and set ernno to ENOMEM
 			result = NULL;
+			errno = ENOMEM;
+		}
 		else
 			result = malloc(size);
 	}
