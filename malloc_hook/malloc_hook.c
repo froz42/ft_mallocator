@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/25 13:28:09 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/26 14:38:11 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/26 15:26:36 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,7 @@ int	should_ignore(void *caller)
 	{
 		"_IO_file_doallocate",
 		"_dl_allocate_tls",
+		"unknown",
 		NULL
 	};
 	for (size_t i = 0; ignore_func_name[i]; i++)
