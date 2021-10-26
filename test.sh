@@ -1,3 +1,4 @@
+#!/bin/bash
 echo "    __  ______    __    __    ____  _________  __________  ____ "
 echo "   /  |/  /   |  / /   / /   / __ \\/ ____/   |/_  __/ __ \\/ __ \\"
 echo "  / /|_/ / /| | / /   / /   / / / / /   / /| | / / / / / / /_/ /"
@@ -7,6 +8,12 @@ echo
 echo 'By tmatis <tmatis@student.42.fr>'
 echo
                                                                 
+
+if [ ! -n "$BASH" ] ;
+then
+	echo "Please run this script using bash"
+	exit 1
+fi
 
 #CONFIG 
 args="4 800 200 200 3"
