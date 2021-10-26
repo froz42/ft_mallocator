@@ -9,7 +9,7 @@ echo
                                                                 
 
 #CONFIG 
-args="./maps/test.ber"
+args="4 800 200 200 3"
 
 
 # COLORS VAR
@@ -29,7 +29,6 @@ mkdir ./logs
 
 make re FETCH_ADDR=0 > /dev/null
 
-echo -ne "${BOLD}Fetching mallocs ... ${NC}"
 
 
 
@@ -38,7 +37,19 @@ cd ..
 
 echo "0x0" > ./.addr.tmp
 
-make malloc_test # -fsanitize=undefined -rdynamic -g -L./ft_mallocator -lmallocator
+echo -ne "${BOLD}Compiling ... ${NC}"
+
+make malloc_test &> ./ft_mallocator/logs/compilation.log # -fsanitize=undefined -rdynamic -g -L./ft_mallocator -lmallocator
+ret=$?
+
+if [ $ret -ne 0 ]; then
+	echo -e "${RED}fail${NC} check /ft_mallocator/logs/compilation.log"
+	exit 1
+else
+	echo -e "${GREEN}done${NC}"
+fi
+
+echo -ne "${BOLD}Fetching mallocs ... ${NC}"
 
 ./malloc_test $args &> ./ft_mallocator/logs/fetch_out.log
 
@@ -84,5 +95,5 @@ for address in $address_list; do
 	fi
 done
 
-#rm ./.addr.tmp
+rm ./.addr.tmp
 
