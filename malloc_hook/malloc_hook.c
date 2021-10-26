@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/25 13:28:09 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/26 17:09:36 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/26 19:25:52 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,33 +29,12 @@ vector_t g_malloc_hook_vector;
 int g_malloc_vector_init = 0;
 int g_at_exit_hook_active = 0;
 
-size_t g_fetch;
-int g_fetch_active = 0;
-
 int g_fd_out = -1;
 
 t_alloc_list *g_alloc_list = NULL;
 
 void setup_g_fetch(void)
 {
-	int fd = open("./ft_mallocator/addr.tmp", O_RDONLY);
-	if (fd < 0)
-	{
-		perror("open");
-		exit(EXIT_FAILURE);
-	}
-
-	char buffer[100];
-	size_t read_bytes = read(fd, buffer, sizeof(buffer) - 1);
-	if (read_bytes < 0)
-	{
-		perror("read");
-		exit(EXIT_FAILURE);
-	}
-	buffer[read_bytes] = '\0';
-
-	g_fetch = strtoul(buffer, NULL, 16);
-	close(fd);
 }
 
 void setup_g_fd_out(void)
@@ -71,13 +50,7 @@ void setup_g_fd_out(void)
 void at_exit_hook(void)
 {
 	g_malloc_hook_active = 0;
-	dprintf(g_fd_out, "\n\n###FT_MALLOCATOR###\n");
-	if (g_alloc_list)
-		print_list(g_alloc_list);
-	dprintf(g_fd_out, "leaked bloc: %zu\n", size_list(g_alloc_list));
-	if (g_fetch == 0)
-		print_vector(&g_malloc_hook_vector);
-	close(g_fd_out);
+	
 }
 
 int	should_ignore(void *caller)
@@ -108,51 +81,13 @@ void *my_malloc_hook(size_t size, void *caller)
 	if (g_fd_out == -1)
 		setup_g_fd_out();
 
-	if (!g_fetch_active)
-	{
-		g_fetch_active = 1;
-		setup_g_fetch();
-	}
-
 	if (!g_at_exit_hook_active)
 	{
 		g_at_exit_hook_active = 1;
 		atexit(at_exit_hook);
 	}
-	size_t caller_address = (size_t)(&_end) - (size_t)caller;
-
-	if (g_fetch == 0)
-	{
-		if (!g_malloc_vector_init)
-		{
-			init_vector(&g_malloc_hook_vector);
-			g_malloc_vector_init = 1;
-		}
-		pair_t pair;
-		pair.data = caller_address;
-		pair.caller = caller;
-		if (!find_vector(&g_malloc_hook_vector, &pair))
-		{
-			if ((caller_address & 0xffff000000000000) == 0)
-				push_back_vector(&g_malloc_hook_vector, &pair);
-		}
-		result = malloc(size);
-	}
-	else
-	{
-		if (g_fetch == caller_address)
-		{
-			// block malloc and set ernno to ENOMEM
-			result = NULL;
-			errno = ENOMEM;
-		}
-		else
-			result = malloc(size);
-	}
-	if (result != NULL && !should_ignore(caller))
-		push_list(&g_alloc_list, result, size, caller);
 	g_malloc_hook_active = 1;
-	return (result);
+	return (NULL);
 }
 
 void *malloc(size_t size)

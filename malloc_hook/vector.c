@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/25 14:01:55 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/26 16:52:26 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/26 19:25:08 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,13 +61,5 @@ pair_t *find_vector(vector_t *vector, pair_t *value)
 
 void print_vector(vector_t *vector)
 {
-	size_t i = 0;
-	printf("address: ");
-	while (i < vector->size)
-	{
-		dprintf(g_fd_out, "%#zx(%s) ", vector->data[i].data,
-			get_func_name(vector->data[i].caller));
-		i++;
-	}
-	printf("\n");
+	
 }

@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/25 20:25:29 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/26 16:53:23 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/26 19:25:41 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,18 +83,6 @@ void pop_list(t_alloc_list **list, void *ptr)
 
 void print_list(t_alloc_list *list)
 {
-	dprintf(g_fd_out, "|-----------------------------------------------|\n");
-	dprintf(g_fd_out, "|                   LEAK SUMMARY                |\n");
-	dprintf(g_fd_out, "|-----------------------------------------------|\n");
-	dprintf(g_fd_out, "|%15s|%15s|%15s|\n", "caller", "size", "ptr");
-	dprintf(g_fd_out, "|-----------------------------------------------|\n");
-	while (list != NULL)
-	{
-		dprintf(g_fd_out, "|%15s|%15zu|%15p|\n", get_func_name(list->caller),
-			list->size, list->ptr);
-		list = list->next;
-	}
-	dprintf(g_fd_out, "|-----------------------------------------------|\n");
 }
 
 void clear_list(t_alloc_list **list)
