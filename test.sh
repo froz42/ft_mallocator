@@ -37,6 +37,8 @@ cd ..
 
 make malloc_test
 
+
+# -fsanitize=undefined -rdynamic -g -L./ft_mallocator -lmallocator
 ./malloc_test &> ./ft_mallocator/logs/fetch_out.log
 
 FETCH_OUT=$(cat ./ft_mallocator/logs/fetch_out.log | tail -n 3)
