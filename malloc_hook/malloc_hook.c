@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/25 13:28:09 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/26 00:25:21 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/26 13:24:15 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,6 @@ vector_t g_malloc_hook_vector;
 
 int g_malloc_vector_init = 0;
 int g_at_exit_hook_active = 0;
-
-int g_malloc_count = 0;
-int g_free_count = 0;
 
 size_t g_fetch;
 int g_fetch_active = 0;
@@ -64,17 +61,10 @@ void at_exit_hook(void)
 	g_malloc_hook_active = 0;
 	printf("\n\n###FT_MALLOCATOR###\n");
 	if (g_alloc_list)
-	{
 		print_list(g_alloc_list);
-		clear_list(&g_alloc_list);
-	}
-	printf("malloc: %d\n", g_malloc_count);
-	printf("free: %d\n", g_free_count);
+	printf("leaked bloc: %zu\n", size_list(g_alloc_list));
 	if (g_fetch == 0)
-	{
 		print_vector(&g_malloc_hook_vector);
-		free_vector(&g_malloc_hook_vector);
-	}
 }
 
 void *my_malloc_hook(size_t size, void *caller)
@@ -123,10 +113,7 @@ void *my_malloc_hook(size_t size, void *caller)
 			result = malloc(size);
 	}
 	if (result != NULL && strcmp(get_func_name(caller), "_IO_file_doallocate"))
-	{
 		push_list(&g_alloc_list, result, size, caller);
-		g_malloc_count++;
-	}
 	g_malloc_hook_active = 1;
 	return (result);
 }
@@ -160,7 +147,6 @@ void my_free_hook(void *ptr)
 {
 	g_malloc_hook_active = 0;
 	pop_list(&g_alloc_list, ptr);
-	g_free_count++;
 	g_malloc_hook_active = 1;
 }
 

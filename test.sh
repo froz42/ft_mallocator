@@ -42,24 +42,17 @@ make malloc_test # -fsanitize=undefined -rdynamic -g -L./ft_mallocator -lmalloca
 
 ./malloc_test $args &> ./ft_mallocator/logs/fetch_out.log
 
-FETCH_OUT=$(cat ./ft_mallocator/logs/fetch_out.log | tail -n 3)
-# format is
-# malloc: nb_malloc
-# free: nb_free
-# <address> <address> <address> <address> etc..
-# leaked
-# leaked
+FETCH_OUT=$(cat ./ft_mallocator/logs/fetch_out.log | tail -n 2)
 
 # we parse
-nb_malloc=$(head -n 1 <<< "$FETCH_OUT" | cut -d ':' -f 2 | xargs)
-nb_free=$(head -n 2 <<< "$FETCH_OUT" | tail -n 1 | cut -d ':' -f 2 | xargs)
-address_list=$(head -n 3 <<< "$FETCH_OUT" | tail -n 1)
+nb_leaked_block=$(head -n 1 <<< "$FETCH_OUT" | cut -d ':' -f 2 | xargs)
+address_list=$(head -n 2 <<< "$FETCH_OUT" | tail -n 1)
 is_leaking=0
 echo -e "${GREEN}done${NC}"
 echo
 
 # check if nb_free == nb_malloc
-if [ $nb_free -eq $nb_malloc ]; then
+if [ $nb_leaked_block -eq 0 ]; then
 	echo -e "${BOLD}leak: ${GREEN}[OK]${NC} (./ft_mallocator/logs/fetch_out.log)"
 else
 	echo -e "${BOLD}leak: ${RED}[KO]${NC} (./ft_mallocator/logs/fetch_out.log) ${CYAN}<<<${NC} check with ${BOLD}valgrind${NC}"
@@ -78,11 +71,10 @@ for address in $address_list; do
 		echo -e " ${RED}[KO]${NC} ./ft_mallocator/logs/log_$address.log"
 	else
 		echo -e " ${GREEN}[OK]${NC}"
-		log_content=$(cat ./ft_mallocator/logs/log_$address.log | tail -n 2)
-		nb_malloc=$(head -n 1 <<< "$log_content" | cut -d ':' -f 2 | xargs)
-		nb_free=$(head -n 2 <<< "$log_content" | tail -n 1 | cut -d ':' -f 2 | xargs)
+		log_content=$(cat ./ft_mallocator/logs/log_$address.log | tail -n 1)
+		nb_leaked_block=$(head -n 1 <<< "$log_content" | cut -d ':' -f 2 | xargs)
 		# $nb_free != $nb_malloc && is_leaking == 1
-		if [ $nb_free -ne $nb_malloc ]; then
+		if [ $nb_leaked_block -ne 0 ]; then
 			if [ $is_leaking -eq 0 ]; then
 				echo -ne " ${YELLOW} Warning >>> ${NC} "
 				echo "you do not free everything when this malloc crash (see ./ft_mallocator/logs/log_$address.log)"

@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/25 20:24:09 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/25 21:10:33 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/26 13:21:39 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,5 +38,6 @@ t_alloc_list *find_list(t_alloc_list *list, void *ptr);
 void pop_list(t_alloc_list **list, void *ptr);
 void print_list(t_alloc_list *list);
 void clear_list(t_alloc_list **list);
+size_t size_list(t_alloc_list *list);
 
 #endif

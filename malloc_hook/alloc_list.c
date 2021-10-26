@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/25 20:25:29 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/26 00:25:02 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/26 13:21:15 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,4 +107,17 @@ void clear_list(t_alloc_list **list)
 		*list = (*list)->next;
 		free(tmp);
 	}
+}
+
+size_t size_list(t_alloc_list *list)
+{
+	size_t size;
+
+	size = 0;
+	while (list != NULL)
+	{
+		size++;
+		list = list->next;
+	}
+	return (size);
 }
