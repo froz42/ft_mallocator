@@ -6,12 +6,13 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/25 20:25:29 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/25 22:29:26 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/26 00:25:02 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "alloc_list.h"
 #include <stdio.h>
+#include <string.h>
 
 char const *get_func_name(void *addr)
 {

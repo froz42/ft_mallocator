@@ -24,17 +24,20 @@ rm -rf ./logs
 mkdir ./logs
 
 # FETCH MALLOC RUN
-echo -ne "${BOLD}Fetching mallocs ... ${NC}"
 
 make re FETCH_ADDR=0 > /dev/null
 
+echo -ne "${BOLD}Fetching mallocs ... ${NC}"
+
 echo "0x0" > ./addr.tmp
 
+
+# need those
 clang -fsanitize=undefined -Wall -Wextra -Werror -rdynamic -g -o malloc_test main.c -L. -lmallocator
 
-./malloc_test > ./logs/fetch_out.log
+./malloc_test &> ./logs/fetch_out.log
 
-FETCH_OUT=$(cat ./logs/fetch_out.log)
+FETCH_OUT=$(cat ./logs/fetch_out.log | tail -n 3)
 # format is
 # malloc: nb_malloc
 # free: nb_free
@@ -70,7 +73,7 @@ for address in $address_list; do
 		echo -e " ${RED}[KO]${NC} ./logs/log_$address.log"
 	else
 		echo -e " ${GREEN}[OK]${NC}"
-		log_content=$(cat ./logs/log_$address.log)
+		log_content=$(cat ./logs/log_$address.log | tail -n 2)
 		nb_malloc=$(head -n 1 <<< "$log_content" | cut -d ':' -f 2 | xargs)
 		nb_free=$(head -n 2 <<< "$log_content" | tail -n 1 | cut -d ':' -f 2 | xargs)
 		# $nb_free != $nb_malloc && is_leaking == 1

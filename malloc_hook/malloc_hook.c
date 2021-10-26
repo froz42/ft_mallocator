@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/25 13:28:09 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/25 22:11:21 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/26 00:25:21 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,18 +62,18 @@ void setup_g_fetch(void)
 void at_exit_hook(void)
 {
 	g_malloc_hook_active = 0;
-
+	printf("\n\n###FT_MALLOCATOR###\n");
+	if (g_alloc_list)
+	{
+		print_list(g_alloc_list);
+		clear_list(&g_alloc_list);
+	}
 	printf("malloc: %d\n", g_malloc_count);
 	printf("free: %d\n", g_free_count);
 	if (g_fetch == 0)
 	{
 		print_vector(&g_malloc_hook_vector);
 		free_vector(&g_malloc_hook_vector);
-	}
-	if (g_alloc_list)
-	{
-		print_list(g_alloc_list);
-		clear_list(&g_alloc_list);
 	}
 }
 
@@ -122,7 +122,7 @@ void *my_malloc_hook(size_t size, void *caller)
 		else
 			result = malloc(size);
 	}
-	if (result != NULL)
+	if (result != NULL && strcmp(get_func_name(caller), "_IO_file_doallocate"))
 	{
 		push_list(&g_alloc_list, result, size, caller);
 		g_malloc_count++;
