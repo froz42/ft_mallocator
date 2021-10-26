@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/25 13:28:09 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/26 21:33:38 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/26 23:04:58 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,8 @@
 #include <dlfcn.h>
 #include "utils_hook.h"
 #include "alloc_list.h"
+#include "alloc_vector.h"
 #include "malloc_hook.h"
-
 
 int g_malloc_hook_active = 1;
 
@@ -28,12 +28,15 @@ int g_at_exit_hook_active = 0;
 
 int g_fd_out = STDOUT_FILENO; // ./ft_mallocator/res.tmp
 
+void *g_route[20];
+int g_route_setup = 0;
+
+int g_fetch_mode = 1;
+
+t_alloc_vector g_alloc_vector;
+int g_alloc_vector_setup = 0;
+
 t_alloc_list *g_alloc_list = NULL;
-
-
-void setup_g_fetch(void)
-{
-}
 
 void setup_g_fd_out(void)
 {
@@ -52,6 +55,7 @@ void at_exit_hook(void)
 	g_malloc_hook_active = 0;
 	dprintf(g_fd_out, "at_exit_hook\n");
 	dprintf(g_fd_out, "leaked blocks: %zi\n", size_alloc_list(g_alloc_list));
+	print_alloc_vector(&g_alloc_vector);
 }
 
 void get_backtrace(void *trace[20])
@@ -68,11 +72,10 @@ void get_backtrace(void *trace[20])
 	trace[y] = NULL;
 }
 
-
 void *alloc_hook(size_t size, void *caller)
 {
 	char *result = NULL;
-	
+
 	g_malloc_hook_active = 0;
 
 	if (g_fd_out == -1)
@@ -84,15 +87,31 @@ void *alloc_hook(size_t size, void *caller)
 		atexit(at_exit_hook);
 	}
 
+	if (g_fetch_mode && !g_alloc_vector_setup)
+	{
+		g_alloc_vector_setup = 1;
+		init_alloc_vector(&g_alloc_vector);
+	}
+
 	size_t caller_address = (size_t)(&_end) - (size_t)caller;
 	if ((caller_address & 0xffff000000000000) == 0)
 	{
-		void *trace[20];
+		void *route[20];
 
-		get_backtrace(trace);
-		
+		get_backtrace(route);
+
 		result = malloc(size);
-		add_alloc_list(&g_alloc_list, result, size, trace);
+		add_alloc_list(&g_alloc_list, result, size, route);
+		if (g_fetch_mode)
+		{
+			if (!find_alloc_vector(&g_alloc_vector, route))
+			{
+				t_alloc alloc;
+				
+				route_copy(alloc.route, route);
+				push_back_vector(&g_alloc_vector, &alloc);
+			}
+		}
 	}
 	else
 		result = malloc(size);
@@ -134,7 +153,6 @@ void my_free_hook(void *ptr)
 	remove_alloc_list(&g_alloc_list, ptr);
 	g_malloc_hook_active = 1;
 }
-
 
 void free(void *ptr)
 {

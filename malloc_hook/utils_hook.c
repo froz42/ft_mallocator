@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/26 19:43:18 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/26 19:56:11 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/26 22:49:34 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,3 +42,23 @@ int	should_ignore(void *caller)
 	return (0);
 }
 
+int routes_eq(void *a[], void *b[])
+{
+	size_t i = 0;
+
+	while (a[i] && a[i] == b[i])
+		i++;
+	return (a[i] == b[i]);
+}
+
+void route_copy(void *dst[], void *src[])
+{
+	size_t i = 0;
+
+	while (src[i])
+	{
+		dst[i] = src[i];
+		i++;
+	}
+	dst[i] = NULL;
+}

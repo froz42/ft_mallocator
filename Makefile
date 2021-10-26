@@ -6,7 +6,7 @@
 #    By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/07/14 10:00:31 by tmatis            #+#    #+#              #
-#    Updated: 2021/10/26 21:06:27 by tmatis           ###   ########.fr        #
+#    Updated: 2021/10/26 23:13:54 by tmatis           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,10 +17,8 @@
 
 NAME	= libmallocator.a
 CC 		= clang
-CFLAGS	= -Wall -Wextra -Werror -g3
+CFLAGS	= -Wall -Wextra -Werror -g
 DFLAGS	= -MMD -MF $(@:.o=.d)
-
-FETCH_ADDR = 0
 
 ################################################################################
 #                                 PROGRAM'S SRCS                               #
@@ -30,9 +28,7 @@ FILE_EXTENSION	= .c
 
 SRCS_PATH		= ./malloc_hook
 
-INCLUDE_PATH	= ./
-
-SRCS			= malloc_hook.c utils_hook.c alloc_list.c
+SRCS			= malloc_hook.c utils_hook.c alloc_list.c alloc_vector.c
 
 ################################################################################
 #                                  Makefile  objs                              #
@@ -56,7 +52,7 @@ $(NAME):	${OBJS}
 
 objs/%.o: 	$(SRCS_PATH)/%$(FILE_EXTENSION)
 			@mkdir -p $(dir $@)
-			$(CC) $(CFLAGS) $(DFLAGS) -c $< -o $@ -I$(INCLUDE_PATH) -D FETCH_ADDR=$(FETCH_ADDR)
+			$(CC) $(CFLAGS) $(DFLAGS) -c $< -o $@
 
 clean:		
 			@rm -rf objs
