@@ -1,30 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   alloc_list.h                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/10/26 19:48:25 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/26 21:34:05 by tmatis           ###   ########.fr       */
+/*   Created: 2021/10/26 20:54:59 by tmatis            #+#    #+#             */
+/*   Updated: 2021/10/26 21:27:08 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#ifndef ALLOC_LIST_H
+# define ALLOC_LIST_H
+
 #include <stdlib.h>
 
-char *malloc_function(void)
-{
-	return (malloc(1000));
-}
 
-void other_func(void)
+typedef struct		s_alloc_list
 {
-	free(malloc_function());
-}
+	void			*ptr;
+	size_t			size;
+	void			*trace[20];
+	
+	struct s_alloc_list	*next;
+}					t_alloc_list;
 
-int main(void)
-{
-	free(malloc_function());
-	//free(dest);
-	other_func();
-}
+void add_alloc_list(t_alloc_list **list, void *ptr, size_t size, void * const trace[20]);
+void remove_alloc_list(t_alloc_list **list, void *ptr);
+size_t size_alloc_list(t_alloc_list *list);
+
+
+#endif

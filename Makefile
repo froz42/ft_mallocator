@@ -6,7 +6,7 @@
 #    By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/07/14 10:00:31 by tmatis            #+#    #+#              #
-#    Updated: 2021/10/26 19:52:00 by tmatis           ###   ########.fr        #
+#    Updated: 2021/10/26 21:06:27 by tmatis           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -32,7 +32,7 @@ SRCS_PATH		= ./malloc_hook
 
 INCLUDE_PATH	= ./
 
-SRCS			= malloc_hook.c utils_hook.c
+SRCS			= malloc_hook.c utils_hook.c alloc_list.c
 
 ################################################################################
 #                                  Makefile  objs                              #
