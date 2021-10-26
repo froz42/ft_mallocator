@@ -8,6 +8,8 @@ echo 'By tmatis <tmatis@student.42.fr>'
 echo
                                                                 
 
+#CONFIG 
+args=""
 
 
 # COLORS VAR
@@ -29,17 +31,16 @@ make re FETCH_ADDR=0 > /dev/null
 
 echo -ne "${BOLD}Fetching mallocs ... ${NC}"
 
-echo "0x0" > ./addr.tmp
 
 
 # need those
 cd ..
 
-make malloc_test
+echo "0x0" > ./.addr.tmp
 
+make malloc_test # -fsanitize=undefined -rdynamic -g -L./ft_mallocator -lmallocator
 
-# -fsanitize=undefined -rdynamic -g -L./ft_mallocator -lmallocator
-./malloc_test &> ./ft_mallocator/logs/fetch_out.log
+./malloc_test $args &> ./ft_mallocator/logs/fetch_out.log
 
 FETCH_OUT=$(cat ./ft_mallocator/logs/fetch_out.log | tail -n 3)
 # format is
@@ -71,7 +72,7 @@ echo
 for address in $address_list; do
 	echo -en "${BOLD}Checking malloc at address: ${CYAN}$address${NC}"
 	echo $address > ./addr.tmp
-	./malloc_test &> ./ft_mallocator/logs/log_$address.log
+	./malloc_test $args &> ./ft_mallocator/logs/log_$address.log
 	ret=$?
 	if grep -q "ERROR: UndefinedBehaviorSanitizer" ./logs/log_$address.log; then
 		echo -e " ${RED}[KO]${NC} ./ft_mallocator/logs/log_$address.log"
