@@ -119,6 +119,7 @@ do
 	rm ./addresses.tmp
 	if grep -q "ERROR: UndefinedBehaviorSanitizer" ./logs/$path_names/$count.log; then
 		echo -e "${RED}fail${NC}"
+		echo -e "${RED}  <<<${NC} this malloc is not protected, check: ${BOLD}./logs/$path_names/$count.log${NC}"
 	else
 		echo -e "${GREEN}done${NC}"
 	fi
