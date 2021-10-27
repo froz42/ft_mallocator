@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/25 13:28:09 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/26 23:04:58 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/27 13:13:10 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,11 +22,12 @@
 #include "alloc_vector.h"
 #include "malloc_hook.h"
 
+#define LEAK_PATH "./res.tmp"
+#define ROUTES_PATH "./routes.tmp"
+
 int g_malloc_hook_active = 1;
 
 int g_at_exit_hook_active = 0;
-
-int g_fd_out = STDOUT_FILENO; // ./ft_mallocator/res.tmp
 
 void *g_route[20];
 int g_route_setup = 0;
@@ -38,24 +39,17 @@ int g_alloc_vector_setup = 0;
 
 t_alloc_list *g_alloc_list = NULL;
 
-void setup_g_fd_out(void)
-{
-	/*
-	g_fd_out = open("./ft_mallocator/res.tmp", O_WRONLY | O_CREAT, 0644);
-	if (g_fd_out < 0)
-	{
-		perror("open");
-		exit(EXIT_FAILURE);
-	}
-	*/
-}
-
 void at_exit_hook(void)
 {
 	g_malloc_hook_active = 0;
-	dprintf(g_fd_out, "at_exit_hook\n");
-	dprintf(g_fd_out, "leaked blocks: %zi\n", size_alloc_list(g_alloc_list));
-	print_alloc_vector(&g_alloc_vector);
+	int routes_fd = open(ROUTES_PATH, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (routes_fd < 0)
+	{
+		perror("at_exit_hook");
+		exit(EXIT_FAILURE);
+	}
+	//dprintf(g_fd_out, "leaked blocks: %zi\n", size_alloc_list(g_alloc_list));
+	print_alloc_vector(&g_alloc_vector, routes_fd);
 }
 
 void get_backtrace(void *trace[20])
@@ -77,10 +71,7 @@ void *alloc_hook(size_t size, void *caller)
 	char *result = NULL;
 
 	g_malloc_hook_active = 0;
-
-	if (g_fd_out == -1)
-		setup_g_fd_out();
-
+	
 	if (!g_at_exit_hook_active)
 	{
 		g_at_exit_hook_active = 1;
@@ -104,13 +95,16 @@ void *alloc_hook(size_t size, void *caller)
 		add_alloc_list(&g_alloc_list, result, size, route);
 		if (g_fetch_mode)
 		{
-			if (!find_alloc_vector(&g_alloc_vector, route))
+			t_alloc *found = find_alloc_vector(&g_alloc_vector, route);
+			if (!found)
 			{
 				t_alloc alloc;
 				
 				route_copy(alloc.route, route);
 				push_back_vector(&g_alloc_vector, &alloc);
 			}
+			else
+				found->iteration++;
 		}
 	}
 	else

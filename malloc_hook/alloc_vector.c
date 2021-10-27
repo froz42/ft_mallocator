@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/26 22:32:22 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/26 23:07:28 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/27 13:20:33 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "utils_hook.h"
+#include "malloc_hook.h"
 
 void	init_alloc_vector(t_alloc_vector *alloc_vector)
 {
@@ -44,6 +45,7 @@ void push_back_vector(t_alloc_vector *alloc_vector, t_alloc *alloc)
 	for (i = 0; alloc->route[i]; i++)
 		alloc_vector->data[alloc_vector->size].route[i] = alloc->route[i];
 	alloc_vector->data[alloc_vector->size].route[i] = NULL;
+	alloc_vector->data[alloc_vector->size].iteration = 1;
 	alloc_vector->size++;
 }
 
@@ -58,14 +60,15 @@ t_alloc	*find_alloc_vector(t_alloc_vector *alloc_vector, void *route[])
 	return (NULL);
 }
 
-void print_alloc_vector(t_alloc_vector *alloc_vector)
+void print_alloc_vector(t_alloc_vector *alloc_vector, int fd)
 {
 	
 	for (size_t i = 0; i < alloc_vector->size; i++)
 	{
 		for (size_t j = 0; alloc_vector->data[i].route[j]; j++)
-			printf("%p (%s) <- ", alloc_vector->data[i].route[j],
+			dprintf(fd, "%p:%s ", (void *) ((void *)&_end - alloc_vector->data[i].route[j]),
 						get_func_name(alloc_vector->data[i].route[j]));
-		printf("\n");
+		dprintf(fd, "#%zd", alloc_vector->data[i].iteration);
+		dprintf(fd, "\n");
 	}
 }

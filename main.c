@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/26 19:48:25 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/26 23:08:03 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/27 11:49:20 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int main(void)
 	//free(dest);
 	other_func();
 
-	size_t i = 8;
+	size_t i = 69;
 	while (i--)
 		free(malloc_function());
 }

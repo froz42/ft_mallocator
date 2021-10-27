@@ -31,7 +31,7 @@ mkdir ./logs
 
 echo -ne "${BOLD}Make malloc hook ... ${NC}"
 
-make re #&> ./logs/make_malloc_hook.log
+make re > ./logs/make_malloc_hook.log
 return_value=$?
 
 if [ $return_value -ne 0 ]; then
@@ -41,4 +41,53 @@ else
 	echo -e "${GREEN}done${NC}"
 fi
 
+echo -ne "${BOLD}Compiling ... ${NC}"
+
 clang -Wall -Werror -Wextra -fsanitize=undefined -rdynamic -g main.c -o test_bin -L. -lmallocator
+
+echo -e "${GREEN}done${NC}"
+
+echo -ne "${BOLD}Fetching malloc routes ... ${NC}"
+
+./test_bin &> ./logs/fetch_routes.log
+
+echo -e "${GREEN}done${NC}"
+
+echo
+
+routes=()
+
+readarray -t routes < ./routes.tmp
+
+for route in "${routes[@]}"
+do
+	# we need to parse route the format is :
+	# addrr:name addr:name addr:name #iteration
+
+	#parse the iteration
+	iteration=$(echo $route | cut -d '#' -f 2)
+
+	#get the addresses
+	addresses_names=$(echo $route | cut -d '#' -f 1)
+
+	names=""
+	addresses=""
+	for address_name in $addresses_names
+	do
+		names="$names $(echo $address_name | cut -d ':' -f 2)"
+		addresses="$addresses $(echo $address_name | cut -d ':' -f 1)"
+	done
+
+	size_names=$(echo $names | wc -w)
+	echo -ne "${BOLD}Testing route: ${NC}"
+	for name in $names
+	do
+		echo -ne "${CYAN}$name${NC}"
+		# if its not the last one, we need to add a space
+		if [ $((size_names--)) -ne 1 ]; then
+			echo -ne "${YELLOW} <- ${NC}"
+		fi
+	done
+	echo " ..."
+
+done

@@ -4,3 +4,4 @@
 malloc_test
 *.log
 .vscode
+*.tmp
