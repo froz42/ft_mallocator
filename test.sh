@@ -31,7 +31,7 @@ mkdir ./logs
 
 echo -ne "${BOLD}Make malloc hook ... ${NC}"
 
-make re > ./logs/make_malloc_hook.log
+make re &> ./logs/make_malloc_hook.log
 return_value=$?
 
 if [ $return_value -ne 0 ]; then
