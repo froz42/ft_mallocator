@@ -102,7 +102,7 @@ do
 		echo -ne "${CYAN}$name${NC}"
 		# if its not the last one, we need to add a space
 		if [ $((size_names--)) -ne 1 ]; then
-			echo -ne "${YELLOW} -> ${NC}"
+			echo -ne "${BLUE} -> ${NC}"
 		fi
 	done
 	echo -n " ... "
