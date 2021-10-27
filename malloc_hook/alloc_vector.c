@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/26 22:32:22 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/27 13:20:33 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/27 14:56:23 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ void print_alloc_vector(t_alloc_vector *alloc_vector, int fd)
 	for (size_t i = 0; i < alloc_vector->size; i++)
 	{
 		for (size_t j = 0; alloc_vector->data[i].route[j]; j++)
-			dprintf(fd, "%p:%s ", (void *) ((void *)&_end - alloc_vector->data[i].route[j]),
+			dprintf(fd, "%p:%s ", (void *) ((size_t)&_end - (size_t)alloc_vector->data[i].route[j]),
 						get_func_name(alloc_vector->data[i].route[j]));
 		dprintf(fd, "#%zd", alloc_vector->data[i].iteration);
 		dprintf(fd, "\n");

@@ -6,11 +6,12 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/26 19:43:18 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/26 22:49:34 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/27 15:42:31 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "utils_hook.h"
+#include "malloc_hook.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -20,7 +21,7 @@ char const *get_func_name(void *addr)
 	if (dladdr(addr, &info) && info.dli_sname)
 		return (info.dli_sname);
 	else
-		return ("unknown");
+		return ("<static_function>");
 }
 
 int	should_ignore(void *caller)
@@ -40,6 +41,20 @@ int	should_ignore(void *caller)
 			return (1);
 	}
 	return (0);
+}
+
+int route_eq_stack(void *a[], void *b[])
+{
+	size_t i = 0;
+
+	while (a[i])
+	{
+		void *routed = (void *) ((size_t)&_end - (size_t)a[i]);
+		if (routed != b[i])
+			return (0);
+		i++;
+	}
+	return (a[i] == b[i]);
 }
 
 int routes_eq(void *a[], void *b[])

@@ -44,15 +44,26 @@ fi
 echo -ne "${BOLD}Compiling ... ${NC}"
 
 clang -Wall -Werror -Wextra -fsanitize=undefined -rdynamic -g main.c -o test_bin -L. -lmallocator
+return_value=$?
 
-echo -e "${GREEN}done${NC}"
+if [ $return_value -ne 0 ]; then
+	echo -e "${RED}fail${NC}"
+	exit 1
+else
+	echo -e "${GREEN}done${NC}"
+fi
 
 echo -ne "${BOLD}Fetching malloc routes ... ${NC}"
 
 ./test_bin &> ./logs/fetch_routes.log
+return_value=$?
 
-echo -e "${GREEN}done${NC}"
-
+if [ $return_value -ne 0 ]; then
+	echo -e "${RED}fail${NC}"
+	exit 1
+else
+	echo -e "${GREEN}done${NC}"
+fi
 echo
 
 routes=()
@@ -77,17 +88,38 @@ do
 		names="$names $(echo $address_name | cut -d ':' -f 2)"
 		addresses="$addresses $(echo $address_name | cut -d ':' -f 1)"
 	done
+	
+	reversed_names=""
+	for name in $names
+	do
+		reversed_names="$name $reversed_names"
+	done
 
 	size_names=$(echo $names | wc -w)
 	echo -ne "${BOLD}Testing route: ${NC}"
-	for name in $names
+	for name in $reversed_names
 	do
 		echo -ne "${CYAN}$name${NC}"
 		# if its not the last one, we need to add a space
 		if [ $((size_names--)) -ne 1 ]; then
-			echo -ne "${YELLOW} <- ${NC}"
+			echo -ne "${YELLOW} -> ${NC}"
 		fi
 	done
-	echo " ..."
-
+	echo -n " ... "
+	echo $addresses > ./addresses.tmp
+	
+	#replace spaces with / in names
+	path_names=$(echo $reversed_names | sed 's/ /\//g')
+	mkdir -p ./logs/$path_names
+	count=$(ls ./logs/$path_names | wc -l)
+	echo '### FT MALLOCATOR TEST ###' > ./logs/$path_names/$count.log
+	echo "route is: $addresses_names" >> ./logs/$path_names/$count.log
+	echo >> ./logs/$path_names/$count.log
+	./test_bin &>> ./logs/$path_names/$count.log
+	rm ./addresses.tmp
+	if grep -q "ERROR: UndefinedBehaviorSanitizer" ./logs/$path_names/$count.log; then
+		echo -e "${RED}fail${NC}"
+	else
+		echo -e "${GREEN}done${NC}"
+	fi
 done

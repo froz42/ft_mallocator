@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/25 13:28:09 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/27 13:13:10 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/27 16:01:57 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,15 +24,16 @@
 
 #define LEAK_PATH "./res.tmp"
 #define ROUTES_PATH "./routes.tmp"
+#define ADDRESS_PATH "./addresses.tmp"
 
 int g_malloc_hook_active = 1;
 
 int g_at_exit_hook_active = 0;
 
-void *g_route[20];
+void *g_route[20] = {NULL};
 int g_route_setup = 0;
 
-int g_fetch_mode = 1;
+int g_fetch_mode = -1;
 
 t_alloc_vector g_alloc_vector;
 int g_alloc_vector_setup = 0;
@@ -42,14 +43,18 @@ t_alloc_list *g_alloc_list = NULL;
 void at_exit_hook(void)
 {
 	g_malloc_hook_active = 0;
-	int routes_fd = open(ROUTES_PATH, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	if (routes_fd < 0)
-	{
-		perror("at_exit_hook");
-		exit(EXIT_FAILURE);
-	}
+
 	//dprintf(g_fd_out, "leaked blocks: %zi\n", size_alloc_list(g_alloc_list));
-	print_alloc_vector(&g_alloc_vector, routes_fd);
+	if (g_fetch_mode)
+	{
+		int routes_fd = open(ROUTES_PATH, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+		if (routes_fd < 0)
+		{
+			perror("at_exit_hook");
+			exit(EXIT_FAILURE);
+		}
+		print_alloc_vector(&g_alloc_vector, routes_fd);
+	}
 }
 
 void get_backtrace(void *trace[20])
@@ -66,17 +71,80 @@ void get_backtrace(void *trace[20])
 	trace[y] = NULL;
 }
 
+void setup_fetch(void)
+{
+	FILE *addresses;
+	char *line = NULL;
+	size_t len = 0;
+
+
+	addresses = fopen(ADDRESS_PATH, "r");
+	if (addresses == NULL)
+	{
+		g_fetch_mode = 1;
+		return;
+	}
+	ssize_t ret = getline(&line, &len, addresses);
+	if (ret < 0)
+	{
+		perror("setup_fetch");
+		exit(EXIT_FAILURE);
+	}
+	char *token = strtok(line, " ");
+	size_t i = 0;
+	while (token != NULL)
+	{
+		g_route[i++] = (void *)strtoul(token, NULL, 16);
+		token = strtok(NULL, " ");
+	}
+	g_route[i] = NULL;
+	free(line);
+	fclose(addresses);
+	g_fetch_mode = 0;
+}
+
+void *fetch_mode(size_t size, void *route[20])
+{
+	void *result = malloc(size);
+	t_alloc *found = find_alloc_vector(&g_alloc_vector, route);
+	if (!found)
+	{
+		t_alloc alloc;
+
+		route_copy(alloc.route, route);
+		push_back_vector(&g_alloc_vector, &alloc);
+	}
+	else
+		found->iteration++;
+	return (result);
+}
+
+void *block_mode(size_t size, void *route[20])
+{
+	void *result;
+
+	if (route_eq_stack(route, g_route))
+		result = NULL;
+	else
+		result = malloc(size);
+	return (result);
+}
+
 void *alloc_hook(size_t size, void *caller)
 {
 	char *result = NULL;
+	void *route[20];
 
 	g_malloc_hook_active = 0;
-	
+
 	if (!g_at_exit_hook_active)
 	{
 		g_at_exit_hook_active = 1;
 		atexit(at_exit_hook);
 	}
+
+	if (g_fetch_mode == -1)
+		setup_fetch();
 
 	if (g_fetch_mode && !g_alloc_vector_setup)
 	{
@@ -84,34 +152,23 @@ void *alloc_hook(size_t size, void *caller)
 		init_alloc_vector(&g_alloc_vector);
 	}
 
+	get_backtrace(route);
 	size_t caller_address = (size_t)(&_end) - (size_t)caller;
 	if ((caller_address & 0xffff000000000000) == 0)
 	{
-		void *route[20];
-
-		get_backtrace(route);
-
-		result = malloc(size);
-		add_alloc_list(&g_alloc_list, result, size, route);
 		if (g_fetch_mode)
-		{
-			t_alloc *found = find_alloc_vector(&g_alloc_vector, route);
-			if (!found)
-			{
-				t_alloc alloc;
-				
-				route_copy(alloc.route, route);
-				push_back_vector(&g_alloc_vector, &alloc);
-			}
-			else
-				found->iteration++;
-		}
+			result = fetch_mode(size, route);
+		else
+			result = block_mode(size, route);
+		if (result)
+			add_alloc_list(&g_alloc_list, result, size, route);
 	}
 	else
 		result = malloc(size);
 
 	g_malloc_hook_active = 1;
-
+	if (!result)
+		errno = ENOMEM;
 	return (result);
 }
 
