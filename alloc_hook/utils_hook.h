@@ -1,27 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   malloc_hook.h                                      :+:      :+:    :+:   */
+/*   utils_hook.h                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/10/25 13:28:41 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/26 19:44:23 by tmatis           ###   ########.fr       */
+/*   Created: 2021/10/26 19:42:42 by tmatis            #+#    #+#             */
+/*   Updated: 2021/10/27 17:16:20 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MALLOC_HOOK_H
-# define MALLOC_HOOK_H
+#ifndef UTILS_HOOK_H
+# define UTILS_HOOK_H
 
-# ifndef FETCH_ADDR
-#  define FETCH_ADDR 0
-# endif
+typedef struct
+{
+	const char *dli_fname;
+	void *dli_fbase;
+	const char *dli_sname;
+	void *dli_saddr;
+} Dl_info;
 
-# include <unistd.h>
-
-extern void	*__libc_malloc(size_t size);
-extern void	*__libc_calloc(size_t size, size_t nmemb);
-extern void	__libc_free(void *ptr);
-extern void *_end;
+int 		dladdr(void *address, Dl_info *dlip);
+char const	*get_func_name(void *addr);
+int			should_ignore(void *caller);
+int 		routes_eq(void *a[], void *b[]);
+int 		route_eq_stack(void *a[], void *b[]);
+void 		route_copy(void *dst[], void *src[]);
 
 #endif

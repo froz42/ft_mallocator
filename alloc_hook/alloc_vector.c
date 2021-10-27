@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/26 22:32:22 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/27 14:56:23 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/27 17:16:12 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "utils_hook.h"
-#include "malloc_hook.h"
+#include "alloc_hook.h"
 
 void	init_alloc_vector(t_alloc_vector *alloc_vector)
 {

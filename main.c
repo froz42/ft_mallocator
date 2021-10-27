@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/26 19:48:25 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/27 16:50:09 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/27 17:14:17 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,4 +40,10 @@ int main(void)
 	char *ptr3 = other_func();
 
 	memset(ptr3, 'C', 1000);
+
+	char *ptr4 = calloc(1, 1000);
+	if (!ptr4)
+		return (1);
+	
+	memset(ptr4, 'D', 1000);
 }

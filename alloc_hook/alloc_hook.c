@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   malloc_hook.c                                      :+:      :+:    :+:   */
+/*   alloc_hook.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/25 13:28:09 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/27 17:03:29 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/27 17:16:04 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 #include "utils_hook.h"
 #include "alloc_list.h"
 #include "alloc_vector.h"
-#include "malloc_hook.h"
+#include "alloc_hook.h"
 
 #define LEAK_PATH "./leaks.tmp"
 #define ROUTES_PATH "./routes.tmp"
