@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/25 13:28:09 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/27 16:01:57 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/27 17:03:29 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
 #include "alloc_vector.h"
 #include "malloc_hook.h"
 
-#define LEAK_PATH "./res.tmp"
+#define LEAK_PATH "./leaks.tmp"
 #define ROUTES_PATH "./routes.tmp"
 #define ADDRESS_PATH "./addresses.tmp"
 
@@ -55,6 +55,14 @@ void at_exit_hook(void)
 		}
 		print_alloc_vector(&g_alloc_vector, routes_fd);
 	}
+
+	int leaks_fd = open(LEAK_PATH, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (leaks_fd < 0)
+	{
+		perror("at_exit_hook");
+		exit(EXIT_FAILURE);
+	}
+	print_alloc_list(g_alloc_list, leaks_fd);
 }
 
 void get_backtrace(void *trace[20])

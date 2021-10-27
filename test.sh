@@ -119,8 +119,15 @@ do
 	rm ./addresses.tmp
 	if grep -q "ERROR: UndefinedBehaviorSanitizer" ./logs/$path_names/$count.log; then
 		echo -e "${RED}fail${NC}"
-		echo -e "${RED}  <<<${NC} this malloc is not protected, check: ${BOLD}./logs/$path_names/$count.log${NC}"
+		echo -e "${RED}  >>>${NC} this malloc is not protected, check: ${BOLD}./logs/$path_names/$count.log${NC}"
 	else
-		echo -e "${GREEN}done${NC}"
+		LEAKS=$(head -n 1 ./leaks.tmp | cut -d ':' -f 2 | sed 's/ //g')
+		if [ $LEAKS -eq 0 ]; then
+			echo -e "${GREEN}done${NC}"
+		else
+			echo -e "${YELLOW}warn${NC}"
+			echo -e "${YELLOW}  >>>${NC} you don't free everything when this malloc crash, check: ${BOLD}./logs/$path_names/$count.log${NC}"
+			cat ./leaks.tmp >> ./logs/$path_names/$count.log
+		fi
 	fi
 done

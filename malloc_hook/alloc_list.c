@@ -6,11 +6,12 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/26 21:01:48 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/27 13:07:31 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/27 17:02:37 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "alloc_list.h"
+#include <stdio.h>
 
 void add_alloc_list(t_alloc_list **list, void *ptr, size_t size, void * const trace[20])
 {
@@ -69,4 +70,14 @@ size_t size_alloc_list(t_alloc_list *list)
 		list = list->next;
 	}
 	return (size);
+}
+
+void print_alloc_list(t_alloc_list *list, int fd)
+{
+	dprintf(fd, "leaked block count: %zd\n", size_alloc_list(list));
+	while (list)
+	{
+		dprintf(fd, "\t%p\t%zd\n", list->ptr, list->size);
+		list = list->next;
+	}
 }
