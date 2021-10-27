@@ -116,7 +116,7 @@ do
 	echo "route is: $addresses_names" >> ./logs/$path_names/$count.log
 	echo >> ./logs/$path_names/$count.log
 	./test_bin &>> ./logs/$path_names/$count.log
-	rm ./addresses.tmp
+	rm -rf ./addresses.tmp
 	if grep -q "ERROR: UndefinedBehaviorSanitizer" ./logs/$path_names/$count.log; then
 		echo -e "${RED}fail${NC}"
 		echo -e "${RED}  >>>${NC} this malloc is not protected, check: ${BOLD}./logs/$path_names/$count.log${NC}"
@@ -130,4 +130,5 @@ do
 			cat ./leaks.tmp >> ./logs/$path_names/$count.log
 		fi
 	fi
+	rm -rf ./leaks.tmp ./routes.tmp
 done

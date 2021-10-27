@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/26 19:43:18 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/27 17:16:18 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/27 17:43:03 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ int routes_eq(void *a[], void *b[])
 	return (a[i] == b[i]);
 }
 
-void route_copy(void *dst[], void *src[])
+void route_copy(void *dst[], void * const src[])
 {
 	size_t i = 0;
 

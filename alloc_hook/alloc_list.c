@@ -6,14 +6,16 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/26 21:01:48 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/27 17:02:37 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/27 17:50:30 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "alloc_list.h"
+#include "utils_hook.h"
 #include <stdio.h>
 
-void add_alloc_list(t_alloc_list **list, void *ptr, size_t size, void * const trace[20])
+void add_alloc_list(t_alloc_list **list, void *ptr, size_t size,
+		void * const trace[20])
 {
 	t_alloc_list *new_alloc;
 
@@ -21,11 +23,8 @@ void add_alloc_list(t_alloc_list **list, void *ptr, size_t size, void * const tr
 		return ;
 	new_alloc->ptr = ptr;
 	new_alloc->size = size;
-	
-	size_t i;
-	for (i = 0; trace[i]; i++)
-		new_alloc->trace[i] = trace[i];
-	new_alloc->trace[i] = NULL;
+
+	route_copy(new_alloc->trace, trace);
 	
 	new_alloc->next = NULL;
 	
@@ -75,9 +74,23 @@ size_t size_alloc_list(t_alloc_list *list)
 void print_alloc_list(t_alloc_list *list, int fd)
 {
 	dprintf(fd, "leaked block count: %zd\n", size_alloc_list(list));
+	dprintf(fd, "--------------------------------------------------\
+-----------------------------\n");
+	dprintf(fd, "|%25s|%25s|%25s|\n", "route", "size", "pointer");
+	dprintf(fd, "--------------------------------------------------\
+-----------------------------\n");
 	while (list)
 	{
-		dprintf(fd, "\t%p\t%zd\n", list->ptr, list->size);
+		size_t route_size = 0;
+		while (list->trace[route_size])
+		{
+			printf("%s\n",	get_func_name(list->trace[route_size]));
+			route_size++;
+		}
+		
+
+		
+
 		list = list->next;
 	}
 }
