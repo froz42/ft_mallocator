@@ -60,11 +60,11 @@ fi
 echo -ne "${BOLD}Compiling ... ${NC}"
 
 make -C $PROJECT_PATH &> ./logs/make.log
-clang -Wall -Werror -Wextra -fsanitize=undefined -rdynamic -g main.c -o malloc_test -L. -lmallocator
+#clang -Wall -Werror -Wextra -fsanitize=undefined -rdynamic -g main.c -o malloc_test -L. -lmallocator
 return_value=$?
 
 if [ $return_value -ne 0 ]; then
-    echo -e "${RED}${BOLD}fail${NC}"
+    echo -e "${RED}${BOLD}fail${NC} check ./logs/make.log"
     exit 1
 else
     echo -e "${GREEN}${BOLD}done${NC}"
