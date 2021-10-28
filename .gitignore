@@ -5,3 +5,4 @@ malloc_test
 *.log
 .vscode
 *.tmp
+test_bin
