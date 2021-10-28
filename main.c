@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/26 19:48:25 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/28 17:17:33 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/28 19:38:30 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,9 @@ int main(void)
 		table[i] = malloc(1000);
 		if (table[i] == NULL)
 		{
-			printf("ite %i fail\n", i);
-			exit(1);
+			for (int j = 0; j < i; j++)
+				free(table[j]);
+			return (1);
 		}
 	}
 	for (int i = 0; i < 10; i++)
