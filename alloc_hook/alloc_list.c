@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/26 21:01:48 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/27 17:50:30 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/28 11:32:59 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ void print_alloc_list(t_alloc_list *list, int fd)
 	dprintf(fd, "leaked block count: %zd\n", size_alloc_list(list));
 	dprintf(fd, "--------------------------------------------------\
 -----------------------------\n");
-	dprintf(fd, "|%25s|%25s|%25s|\n", "route", "size", "pointer");
+	dprintf(fd, "|%-25s|%-25s|%-25s|\n", "route", "size", "pointer");
 	dprintf(fd, "--------------------------------------------------\
 -----------------------------\n");
 	while (list)
@@ -84,11 +84,16 @@ void print_alloc_list(t_alloc_list *list, int fd)
 		size_t route_size = 0;
 		while (list->trace[route_size])
 		{
-			printf("%s\n",	get_func_name(list->trace[route_size]));
 			route_size++;
 		}
-		
-
+		size_t i = 0;
+		while (route_size / 2 > i)
+			dprintf(fd, "|%-25s|%-25s|%-25s|\n", get_func_name(list->trace[i++]), "", "");
+		dprintf(fd, "|%-25s|%-25zd|%-25p|\n", get_func_name(list->trace[i++]), list->size, list->ptr);
+		while (route_size > i)
+			dprintf(fd, "|%-25s|%-25s|%-25s|\n", get_func_name(list->trace[i++]), "", "");
+		dprintf(fd, "--------------------------------------------------\
+-----------------------------\n");
 		
 
 		list = list->next;
