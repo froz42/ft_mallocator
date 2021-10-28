@@ -2,8 +2,9 @@
 
 #CONFIG
 
-PROJECT_PATH="./"
+PROJECT_PATH=".."
 
+ARGS="4 800 200 200 6"
 
 
 # compute config
@@ -59,7 +60,7 @@ fi
 
 echo -ne "${BOLD}Compiling ... ${NC}"
 
-make -C $PROJECT_PATH &> ./logs/make.log
+make -C $PROJECT_PATH malloc_test &> ./logs/make.log
 #clang -Wall -Werror -Wextra -fsanitize=undefined -rdynamic -g main.c -o malloc_test -L. -lmallocator
 return_value=$?
 
@@ -73,14 +74,14 @@ fi
 echo -ne "${BOLD}Fetching malloc routes ... ${NC}"
 
 cd $PROJECT_PATH
-./malloc_test &> $WORK_PATH/logs/fetch_routes.log
+./malloc_test $ARGS &> $WORK_PATH/logs/fetch_routes.log
 cd $WORK_PATH
 
 echo -e "${GREEN}${BOLD}done${NC}"
 echo
 
 routes=()
-readarray -t routes < ./routes.tmp
+readarray -t routes < $PROJECT_PATH/routes.tmp
 
 echo -ne "${BOLD}Leaks ... ${NC}"
 is_leaking=0
@@ -145,7 +146,7 @@ do
     echo >> ./logs/$path_names/$count.log
 
 	cd $PROJECT_PATH
-    ./malloc_test &>> $WORK_PATH/logs/$path_names/$count.log
+    ./malloc_test $ARGS &>> $WORK_PATH/logs/$path_names/$count.log
 	cd $WORK_PATH
 
 
@@ -162,7 +163,7 @@ do
                 echo "### SECOND TEST ###" >> ./logs/$path_names/$count.log
 				
 				cd $PROJECT_PATH
-                ./malloc_test &>> $WORK_PATH/logs/$path_names/$count.log
+                ./malloc_test $ARGS &>> $WORK_PATH/logs/$path_names/$count.log
 				cd $WORK_PATH
 
                 rm -rf $PROJECT_PATH/addresses.tmp $PROJECT_PATH/iteration.tmp
@@ -172,7 +173,7 @@ do
                 else
                     LEAKS=$(head -n 1 $PROJECT_PATH/leaks.tmp | cut -d ':' -f 2 | sed 's/ //g')
                     if [ $LEAKS -eq 0 ] || [ $is_leaking -eq 1 ]; then
-                        echo -e "${GREEN}${BOLD}done${NC}"
+                        echo -e "${GREEN}${BOLD}ok${NC}"
                     else
                         echo -e "${YELLOW}${BOLD}warn${NC}"
                         echo -e "${YELLOW}${BOLD}  >>>${NC} you don't free everything when this malloc crash, check: ${BOLD}./logs/$path_names/$count.log${NC}"
@@ -180,7 +181,7 @@ do
                     fi
                 fi
             else
-                echo -e "${GREEN}${BOLD}done${NC}"
+                echo -e "${GREEN}${BOLD}ok${NC}"
             fi
         else
             echo -e "${YELLOW}${BOLD}warn${NC}"
