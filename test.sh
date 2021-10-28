@@ -166,5 +166,5 @@ do
 			cat ./leaks.tmp >> ./logs/$path_names/$count.log
 		fi
 	fi
-	#rm -rf ./leaks.tmp ./routes.tmp
+	rm -rf ./leaks.tmp ./routes.tmp
 done
