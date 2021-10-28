@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/25 13:28:09 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/27 17:16:04 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/28 17:22:29 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 #define LEAK_PATH "./leaks.tmp"
 #define ROUTES_PATH "./routes.tmp"
 #define ADDRESS_PATH "./addresses.tmp"
+#define ITER_PATH "./iteration.tmp"
 
 int g_malloc_hook_active = 1;
 
@@ -37,6 +38,8 @@ int g_fetch_mode = -1;
 
 t_alloc_vector g_alloc_vector;
 int g_alloc_vector_setup = 0;
+
+size_t g_iteration = 0;
 
 t_alloc_list *g_alloc_list = NULL;
 
@@ -108,6 +111,14 @@ void setup_fetch(void)
 	g_route[i] = NULL;
 	free(line);
 	fclose(addresses);
+	
+	FILE *iteration = fopen(ITER_PATH, "r");
+	if (iteration != NULL)
+	{
+		ssize_t ret = getline(&line, &len, iteration);
+		if (ret >= 0)
+			g_iteration = strtoul(line, NULL, 10);
+	}
 	g_fetch_mode = 0;
 }
 
@@ -129,10 +140,19 @@ void *fetch_mode(size_t size, void *route[20])
 
 void *block_mode(size_t size, void *route[20])
 {
-	void *result;
+	void 	*result;
+	static size_t 	iteration = 0;
 
 	if (route_eq_stack(route, g_route))
-		result = NULL;
+	{
+		if (g_iteration == iteration)
+			return (NULL);
+		else
+		{
+			iteration++;
+			result = malloc(size);
+		}
+	}
 	else
 		result = malloc(size);
 	return (result);

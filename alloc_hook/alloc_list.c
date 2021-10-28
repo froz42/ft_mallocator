@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/26 21:01:48 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/28 13:10:43 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/28 14:24:17 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,19 +15,19 @@
 #include <stdio.h>
 
 void add_alloc_list(t_alloc_list **list, void *ptr, size_t size,
-		void * const trace[20])
+					void *const trace[20])
 {
 	t_alloc_list *new_alloc;
 
 	if (!(new_alloc = malloc(sizeof(t_alloc_list))))
-		return ;
+		return;
 	new_alloc->ptr = ptr;
 	new_alloc->size = size;
 
 	route_copy(new_alloc->trace, trace);
-	
+
 	new_alloc->next = NULL;
-	
+
 	if (*list == NULL)
 		*list = new_alloc;
 	else
@@ -53,7 +53,7 @@ void remove_alloc_list(t_alloc_list **list, void *ptr)
 			else
 				*list = tmp->next;
 			free(tmp);
-			return ;
+			return;
 		}
 		prev = tmp;
 		tmp = tmp->next;
@@ -74,15 +74,12 @@ size_t size_alloc_list(t_alloc_list *list)
 void print_alloc_list(t_alloc_list *list, int fd)
 {
 	dprintf(fd, "leaked block count: %zd\n", size_alloc_list(list));
-	dprintf(fd, "--------------------------------------------------\
------------------------------\n");
+	dprintf(fd, "-------------------------------------------------------------------------------\n");
 	dprintf(fd, "|                                LEAKS SUMMARY\
                                 |\n");
-	dprintf(fd, "--------------------------------------------------\
------------------------------\n");
+	dprintf(fd, "-------------------------------------------------------------------------------\n");
 	dprintf(fd, "|%-25s|%-25s|%-25s|\n", "route", "allocated size", "allocated pointer");
-	dprintf(fd, "--------------------------------------------------\
------------------------------\n");
+	dprintf(fd, "-------------------------------------------------------------------------------\n");
 	while (list)
 	{
 		size_t route_size = 0;
@@ -94,9 +91,7 @@ void print_alloc_list(t_alloc_list *list, int fd)
 		dprintf(fd, "|%-25s|%-25zd|%-25p|\n", get_func_name(list->trace[i++]), list->size, list->ptr);
 		while (i < route_size)
 			dprintf(fd, "|%-25s|%-25s|%-25s|\n", get_func_name(list->trace[i++]), "", "");
-		dprintf(fd, "--------------------------------------------------\
------------------------------\n");
-		
+		dprintf(fd, "-------------------------------------------------------------------------------\n");
 
 		list = list->next;
 	}

@@ -35,10 +35,10 @@ make re &> ./logs/make_malloc_hook.log
 return_value=$?
 
 if [ $return_value -ne 0 ]; then
-	echo -e "${RED}fail${NC} check ./ft_mallocator/logs/make_malloc_hook.log"
+	echo -e "${RED}${BOLD}fail${NC} check ./ft_mallocator/logs/make_malloc_hook.log"
 	exit 1
 else
-	echo -e "${GREEN}done${NC}"
+	echo -e "${GREEN}${BOLD}done${NC}"
 fi
 
 echo -ne "${BOLD}Compiling ... ${NC}"
@@ -47,10 +47,10 @@ clang -Wall -Werror -Wextra -fsanitize=undefined -rdynamic -g main.c -o test_bin
 return_value=$?
 
 if [ $return_value -ne 0 ]; then
-	echo -e "${RED}fail${NC}"
+	echo -e "${RED}${BOLD}fail${NC}"
 	exit 1
 else
-	echo -e "${GREEN}done${NC}"
+	echo -e "${GREEN}${BOLD}done${NC}"
 fi
 
 echo -ne "${BOLD}Fetching malloc routes ... ${NC}"
@@ -59,16 +59,31 @@ echo -ne "${BOLD}Fetching malloc routes ... ${NC}"
 return_value=$?
 
 if [ $return_value -ne 0 ]; then
-	echo -e "${RED}fail${NC}"
+	echo -e "${RED}${BOLD}fail${NC}"
 	exit 1
 else
-	echo -e "${GREEN}done${NC}"
+	echo -e "${GREEN}${BOLD}done${NC}"
 fi
 echo
 
 routes=()
-
 readarray -t routes < ./routes.tmp
+
+echo -ne "${BOLD}Leaks ... ${NC}"
+is_leaking=0
+LEAKS=$(head -n 1 ./leaks.tmp | cut -d ':' -f 2 | sed 's/ //g')
+if [ $LEAKS -ne 0 ]; then
+	echo -e "${RED}${BOLD}fail${NC} check ./logs/fetch_routes.log"
+	is_leaking=1
+else
+	echo -e "${GREEN}${BOLD}ok${NC}"
+fi
+echo
+
+# get size of routes
+size=${#routes[@]}
+
+echo -e "${CYAN}${BOLD}$size${NC} routes to check:"
 
 for route in "${routes[@]}"
 do
@@ -122,13 +137,34 @@ do
 		echo -e "${RED}  >>>${NC} this malloc is not protected, check: ${BOLD}./logs/$path_names/$count.log${NC}"
 	else
 		LEAKS=$(head -n 1 ./leaks.tmp | cut -d ':' -f 2 | sed 's/ //g')
-		if [ $LEAKS -eq 0 ]; then
-			echo -e "${GREEN}done${NC}"
+		if [ $LEAKS -eq 0 ] || [ $is_leaking -eq 1 ]; then
+			if [ $iteration -ne 1 ]; then
+				echo $addresses > ./addresses.tmp
+				echo 1 > ./iteration.tmp
+				echo "### SECOND TEST ###" >> ./logs/$path_names/$count.log
+				./test_bin &>> ./logs/$path_names/$count.log
+				rm -rf ./addresses.tmp ./iteration.tmp
+				if grep -q "ERROR: UndefinedBehaviorSanitizer" ./logs/$path_names/$count.log; then
+					echo -e "${RED}${BOLD}fail${NC}"
+					echo -e "${RED}${BOLD}  >>>${NC} this malloc is not protected, check: ${BOLD}./logs/$path_names/$count.log${NC}"
+				else
+					LEAKS=$(head -n 1 ./leaks.tmp | cut -d ':' -f 2 | sed 's/ //g')
+					if [ $LEAKS -eq 0 ] || [ $is_leaking -eq 1 ]; then
+						echo -e "${GREEN}${BOLD}done${NC}"
+					else
+						echo -e "${YELLOW}${BOLD}warn${NC}"
+						echo -e "${YELLOW}${BOLD}  >>>${NC} you don't free everything when this malloc crash, check: ${BOLD}./logs/$path_names/$count.log${NC}"
+						cat ./leaks.tmp >> ./logs/$path_names/$count.log
+					fi
+				fi
+			else
+				echo -e "${GREEN}${BOLD}done${NC}"
+			fi
 		else
-			echo -e "${YELLOW}warn${NC}"
-			echo -e "${YELLOW}  >>>${NC} you don't free everything when this malloc crash, check: ${BOLD}./logs/$path_names/$count.log${NC}"
+			echo -e "${YELLOW}${BOLD}warn${NC}"
+			echo -e "${YELLOW}${BOLD}  >>>${NC} you don't free everything when this malloc crash, check: ${BOLD}./logs/$path_names/$count.log${NC}"
 			cat ./leaks.tmp >> ./logs/$path_names/$count.log
 		fi
 	fi
-	rm -rf ./leaks.tmp ./routes.tmp
+	#rm -rf ./leaks.tmp ./routes.tmp
 done

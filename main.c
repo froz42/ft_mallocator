@@ -6,12 +6,13 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/26 19:48:25 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/27 17:14:17 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/28 17:17:33 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 char *malloc_function(void)
 {
@@ -26,24 +27,22 @@ char *other_func(void)
 int main(void)
 {
 	char *ptr = malloc_function();
-	if (!ptr)
+	if (ptr == NULL)
 		return (1);
 
-	memset(ptr, 'A', 1000);
+	strcpy(ptr, "Hello World");
+	free(ptr);
 
-	char *ptr2 = malloc_function();
-	if (!ptr2)
-		return (1);
-
-	memset(ptr2, 'B', 1000);
-	
-	char *ptr3 = other_func();
-
-	memset(ptr3, 'C', 1000);
-
-	char *ptr4 = calloc(1, 1000);
-	if (!ptr4)
-		return (1);
-	
-	memset(ptr4, 'D', 1000);
+	void *table[10];
+	for (int i = 0; i < 10; i++)
+	{
+		table[i] = malloc(1000);
+		if (table[i] == NULL)
+		{
+			printf("ite %i fail\n", i);
+			exit(1);
+		}
+	}
+	for (int i = 0; i < 10; i++)
+		free(table[i]);
 }
