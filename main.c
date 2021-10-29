@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/26 19:48:25 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/29 14:10:44 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/29 21:02:55 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,11 @@ int main(void)
 	for (int i = 0; i < 10; i++)
 	{
 		array[i] = malloc(1000);
+		if (array[i] == NULL)
+		{
+			printf("Error\n");
+			return (0);
+		}
 		memset(array[i], 0, 1000);
 	}
 	for (int i = 0; i < 10; i++)

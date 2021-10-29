@@ -121,8 +121,8 @@ fi
 
 echo -ne "${BLUE}${BOLD}>>>${NC} ${BOLD}Compiling ... ${NC}"
 
-cp libmallocator.a $PROJECT_PATH/libmallocator.a
-make -C $PROJECT_PATH malloc_test &> ./logs/make.log
+cp libmallocator.a $PROJECT_PATH/libmallocator.a &> ./logs/make.log
+make -C $PROJECT_PATH malloc_test &>> ./logs/make.log
 #clang -Wall -Werror -Wextra -fsanitize=undefined -rdynamic -g main.c -o malloc_test -L. -lmallocator
 return_value=$?
 rm -rf $PROJECT_PATH/libmallocator.a
@@ -166,6 +166,7 @@ echo
 # get size of routes
 size=${#routes[@]}
 success_route=0
+warn_route=0
 
 echo -e "${CYAN}${BOLD}$size${NC} routes to check:"
 
@@ -244,16 +245,17 @@ do
                     LEAKS=$(head -n 1 $PROJECT_PATH/leaks.tmp | cut -d ':' -f 2 | sed 's/ //g')
                     if [ $LEAKS -eq 0 ] || [ $CHECK_LEAKS -eq 0 ]; then
                         echo -e "${GREEN}${BOLD}ok${NC}"
-                        ((success_route++))
                     else
                         echo -e "${YELLOW}${BOLD}warn${NC}"
                         echo -e "${YELLOW}${BOLD}  >>>${NC} you don't free everything when this malloc crash, check: ${BOLD}./logs/$path_names/$count.log${NC}"
                         cat $PROJECT_PATH/leaks.tmp >> ./logs/$path_names/$count.log
+                        ((warn_route++))
                     fi
+					((success_route++))
                 fi
             else
                 echo -e "${GREEN}${BOLD}ok${NC}"
-                ((success_route++))
+				((success_route++))
             fi
         else
             echo -e "${YELLOW}${BOLD}warn${NC}"
@@ -274,5 +276,9 @@ if [ $success_route -ne $size ]; then
     echo -e "${RED}${BOLD}fail${NC}"
     exit 1
 else
-    echo -e "${GREEN}${BOLD}success${NC}"
+    if [ $warn_route -ne 0 ]; then
+        echo -e "${YELLOW}${BOLD}warn${NC} (not everything is free)"
+    else
+        echo -e "${GREEN}${BOLD}success${NC}"
+    fi
 fi
