@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/25 13:28:09 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/29 11:33:56 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/29 14:34:54 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -197,8 +197,7 @@ void *malloc(size_t size)
 	void *caller;
 
 	caller = __builtin_return_address(0);
-	size_t caller_address = (size_t)(&_end) - (size_t)caller;
-	if (g_malloc_hook_active && (caller_address & 0xffff000000000000) == 0)
+	if (g_malloc_hook_active && (caller < (void*)&_end))
 		return (alloc_hook(size));
 	return (__libc_malloc(size));
 }
@@ -208,8 +207,7 @@ void *calloc(size_t nmemb, size_t size)
 	void *caller;
 
 	caller = __builtin_return_address(0);
-	size_t caller_address = (size_t)(&_end) - (size_t)caller;
-	if (g_malloc_hook_active && (caller_address & 0xffff000000000000) == 0)
+	if (g_malloc_hook_active && (caller < (void*)&_end))
 	{
 		char *result = alloc_hook(nmemb * size);
 		if (result)

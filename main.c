@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/26 19:48:25 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/29 11:23:34 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/29 14:10:44 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,17 @@ char *other_func(void)
 	return (malloc_function());
 }
 
-int main(int argc, char **argv, char **envp)
+int main(void)
 {
-	printf("%i, %p, %p", argc, argv, *envp);
-	free(malloc_function());
+	void *array[10];
+
+	for (int i = 0; i < 10; i++)
+	{
+		array[i] = malloc(1000);
+		memset(array[i], 0, 1000);
+	}
+	for (int i = 0; i < 10; i++)
+	{
+		free(array[i]);
+	}
 }

@@ -2,7 +2,7 @@
 
 #CONFIG
 
-PROJECT_PATH=".."
+PROJECT_PATH="."
 
 ARGS="" # your args here
 
