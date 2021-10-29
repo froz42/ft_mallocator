@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/26 19:42:42 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/27 17:42:48 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/29 21:20:28 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,8 @@ typedef struct
 int 		dladdr(void *address, Dl_info *dlip);
 char const	*get_func_name(void *addr);
 int			should_ignore(void *caller);
-int 		routes_eq(void *a[], void *b[]);
-int 		route_eq_stack(void *a[], void *b[]);
+int			routes_eq(void * const a[], void * const b[]);
+int 		route_eq_stack(void * const a[], void * const b[]);
 void 		route_copy(void *dst[], void * const src[]);
 
 #endif

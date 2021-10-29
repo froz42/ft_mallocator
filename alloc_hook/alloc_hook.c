@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/25 13:28:09 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/29 14:34:54 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/29 21:24:24 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int g_malloc_hook_active = 1;
 
 int g_at_exit_hook_active = 0;
 
-void *g_route[20] = {NULL};
+void *g_route[100] = {NULL};
 
 int g_fetch_mode = -1;
 
@@ -69,12 +69,12 @@ void at_exit_hook(void)
 	print_alloc_list(g_alloc_list, leaks_fd);
 }
 
-void get_backtrace(void *trace[20])
+void get_backtrace(void *trace[])
 {
-	void *array[23];
+	void *array[103];
 	size_t size;
 
-	size = backtrace(array, 23);
+	size = backtrace(array, 103);
 	size_t y = 0;
 	for (size_t i = 2; i < (size - 2); i++)
 	{
@@ -162,7 +162,7 @@ void *block_mode(size_t size, void *route[20])
 void *alloc_hook(size_t size)
 {
 	char *result = NULL;
-	void *route[20];
+	void *route[100];
 
 	g_malloc_hook_active = 0;
 	

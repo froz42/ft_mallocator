@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/26 19:43:18 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/27 17:43:03 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/29 21:20:42 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ int	should_ignore(void *caller)
 	return (0);
 }
 
-int route_eq_stack(void *a[], void *b[])
+int route_eq_stack(void * const a[], void * const b[])
 {
 	size_t i = 0;
 
@@ -57,7 +57,7 @@ int route_eq_stack(void *a[], void *b[])
 	return (a[i] == b[i]);
 }
 
-int routes_eq(void *a[], void *b[])
+int routes_eq(void * const a[], void * const b[])
 {
 	size_t i = 0;
 
