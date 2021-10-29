@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/25 13:28:09 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/28 17:22:29 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/29 11:33:56 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,6 @@ int g_malloc_hook_active = 1;
 int g_at_exit_hook_active = 0;
 
 void *g_route[20] = {NULL};
-int g_route_setup = 0;
 
 int g_fetch_mode = -1;
 
@@ -42,6 +41,8 @@ int g_alloc_vector_setup = 0;
 size_t g_iteration = 0;
 
 t_alloc_list *g_alloc_list = NULL;
+
+int setup_things = 8;
 
 void at_exit_hook(void)
 {
@@ -158,13 +159,13 @@ void *block_mode(size_t size, void *route[20])
 	return (result);
 }
 
-void *alloc_hook(size_t size, void *caller)
+void *alloc_hook(size_t size)
 {
 	char *result = NULL;
 	void *route[20];
 
 	g_malloc_hook_active = 0;
-
+	
 	if (!g_at_exit_hook_active)
 	{
 		g_at_exit_hook_active = 1;
@@ -181,22 +182,13 @@ void *alloc_hook(size_t size, void *caller)
 	}
 
 	get_backtrace(route);
-	size_t caller_address = (size_t)(&_end) - (size_t)caller;
-	if ((caller_address & 0xffff000000000000) == 0)
-	{
-		if (g_fetch_mode)
-			result = fetch_mode(size, route);
-		else
-			result = block_mode(size, route);
-		if (result)
-			add_alloc_list(&g_alloc_list, result, size, route);
-	}
+	if (g_fetch_mode)
+		result = fetch_mode(size, route);
 	else
-		result = malloc(size);
-
+		result = block_mode(size, route);
+	if (result)
+		add_alloc_list(&g_alloc_list, result, size, route);
 	g_malloc_hook_active = 1;
-	if (!result)
-		errno = ENOMEM;
 	return (result);
 }
 
@@ -205,8 +197,9 @@ void *malloc(size_t size)
 	void *caller;
 
 	caller = __builtin_return_address(0);
-	if (g_malloc_hook_active)
-		return (alloc_hook(size, caller));
+	size_t caller_address = (size_t)(&_end) - (size_t)caller;
+	if (g_malloc_hook_active && (caller_address & 0xffff000000000000) == 0)
+		return (alloc_hook(size));
 	return (__libc_malloc(size));
 }
 
@@ -215,9 +208,10 @@ void *calloc(size_t nmemb, size_t size)
 	void *caller;
 
 	caller = __builtin_return_address(0);
-	if (g_malloc_hook_active)
+	size_t caller_address = (size_t)(&_end) - (size_t)caller;
+	if (g_malloc_hook_active && (caller_address & 0xffff000000000000) == 0)
 	{
-		char *result = alloc_hook(nmemb * size, caller);
+		char *result = alloc_hook(nmemb * size);
 		if (result)
 			memset(result, 0, nmemb * size);
 		return (result);

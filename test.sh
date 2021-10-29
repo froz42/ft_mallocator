@@ -2,7 +2,7 @@
 
 #CONFIG
 
-PROJECT_PATH=".."
+PROJECT_PATH="."
 
 ARGS="4 800 200 200 6"
 
@@ -79,6 +79,13 @@ cd $WORK_PATH
 
 echo -e "${GREEN}${BOLD}done${NC}"
 echo
+
+# check if $PROJECT_PATH/routes.tmp exist
+
+if [ ! -f "$PROJECT_PATH/routes.tmp" ]; then
+	echo -e "${BOLD}no routes to fetch, if this is a bug report to tmatis${NC}"
+	exit 0
+fi
 
 routes=()
 readarray -t routes < $PROJECT_PATH/routes.tmp
