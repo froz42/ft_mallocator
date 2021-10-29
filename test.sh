@@ -1,11 +1,10 @@
 #!/bin/bash
 
-#CONFIG
+# default CONFIG
 
-PROJECT_PATH="."
-
-ARGS="" # your args here
-
+PROJECT_PATH=".."
+ARGS=""
+CHECK_LEAKS=1
 
 echo -ne "${CYAN}"
 echo "    __  ______    __    __    ____  _________  __________  ____ "
@@ -25,15 +24,8 @@ fi
 
 # check if script is run on linux
 if [ "$(uname)" != "Linux" ]; then
-	echo "This script is only compatible with Linux"
-	exit 1
-fi
-
-# compute config
-
-# remove last / of PROJECT_PATH if exist
-if [ "${PROJECT_PATH: -1}" == "/" ]; then
-    PROJECT_PATH=${PROJECT_PATH:0:${#PROJECT_PATH}-1}
+    echo "This script is only compatible with Linux"
+    exit 1
 fi
 
 # usefull vars
@@ -46,15 +38,76 @@ RED='\033[0;31m'
 BLUE='\033[1;34m'
 CYAN='\033[0;36m'
 YELLOW='\033[1;33m'
+UNDERLINE='\033[4m'
 BOLD='\033[1m'
 NC='\033[0m'
 
+# check if config file exist
+if [ ! -f "${WORK_PATH}/config.sh" ]; then
+    echo -e "${BLUE}${BOLD}>>>${NC} No config file found configuring.."
+    
+    echo -e "What is your ${UNDERLINE}${BOLD}project path${NC} ? (default is '$PROJECT_PATH')"
+    echo -en "${CYAN}>>> ${NC}"
+    read PROJECT_PATH_TEMP
+    if [ -n "$PROJECT_PATH_TEMP" ]; then
+        PROJECT_PATH=$PROJECT_PATH_TEMP
+    fi
+    
+    echo -e "What ${UNDERLINE}${BOLD}arguments${NC} do you want ?"
+    echo -e "Example :"
+    echo -e "* ${UNDERLINE}4 800 200 200 6${NC} (for philosophers)"
+    echo -e "* ${UNDERLINE}< ./file/to/stdin${NC} (for minishell)"
+    echo -e "* ${UNDERLINE}./path/to/map.mapformat${NC}"
+    echo -e "Note that the path is relative to your project folder"
+    echo -en "${CYAN}>>> ${NC}"
+    read ARGS
+    
+    echo -e "Do you want to check leaks when malloc crash ? [y/n] (default is yes)"
+    echo -en "${CYAN}>>> ${NC}"
+    read CHECK_LEAKS_TEMP
+    if [ -n "$CHECK_LEAKS_TEMP" ]; then
+        if [ "$CHECK_LEAKS_TEMP" == "y" ]; then
+            CHECK_LEAKS=1
+        else
+            CHECK_LEAKS=0
+        fi
+    fi
+    
+    echo
+    
+    echo -en "${BLUE}${BOLD}>>>${NC} ${BOLD}Creating config file ...${NC} "
+    echo -e "PROJECT_PATH=\"${PROJECT_PATH}\"" > config.sh
+    echo -e "ARGS=\"${ARGS}\"" >> config.sh
+    echo -e "CHECK_LEAKS=${CHECK_LEAKS}" >> config.sh
+    
+    echo -e "${GREEN}${BOLD}done${NC}"
+else
+    echo -ne "${BLUE}${BOLD}>>>${NC} ${BOLD}loading config file (config.sh) ... "
+    # load config file
+    source ./config.sh 2> /dev/null
+    return_value=$?
+    if [ $return_value -ne 0 ]; then
+        echo -e "${RED}${BOLD}fail${NC}"
+        exit 1
+    else
+        echo -e "${GREEN}${BOLD}done${NC}"
+    fi
+fi
+
+echo
+
+# compute config
+
+# remove last / of PROJECT_PATH if exist
+if [ "${PROJECT_PATH: -1}" == "/" ]; then
+    PROJECT_PATH=${PROJECT_PATH:0:${#PROJECT_PATH}-1}
+fi
 
 
 rm -rf ./logs
 mkdir ./logs
 
-echo -ne "${BOLD}Make malloc hook ... ${NC}"
+echo -ne "${BLUE}${BOLD}>>>${NC} ${BOLD}Make malloc hook ... ${NC}"
 
 make re &> ./logs/make_malloc_hook.log
 return_value=$?
@@ -66,7 +119,7 @@ else
     echo -e "${GREEN}${BOLD}done${NC}"
 fi
 
-echo -ne "${BOLD}Compiling ... ${NC}"
+echo -ne "${BLUE}${BOLD}>>>${NC} ${BOLD}Compiling ... ${NC}"
 
 make -C $PROJECT_PATH malloc_test &> ./logs/make.log
 #clang -Wall -Werror -Wextra -fsanitize=undefined -rdynamic -g main.c -o malloc_test -L. -lmallocator
@@ -79,7 +132,7 @@ else
     echo -e "${GREEN}${BOLD}done${NC}"
 fi
 
-echo -ne "${BOLD}Fetching malloc routes ... ${NC}"
+echo -ne "${BLUE}${BOLD}>>>${NC} ${BOLD}Fetching malloc routes ... ${NC}"
 
 cd $PROJECT_PATH
 ./malloc_test $ARGS &> $WORK_PATH/logs/fetch_routes.log
@@ -91,26 +144,29 @@ echo
 # check if $PROJECT_PATH/routes.tmp exist
 
 if [ ! -f "$PROJECT_PATH/routes.tmp" ]; then
-	echo -e "${BOLD}no routes to fetch, if this is a bug report to tmatis${NC}"
-	exit 0
+    echo -e "${BOLD}no routes to fetch, if this is a bug report to tmatis${NC}"
+    exit 0
 fi
 
 routes=()
 readarray -t routes < $PROJECT_PATH/routes.tmp
 
-echo -ne "${BOLD}Leaks ... ${NC}"
-is_leaking=0
-LEAKS=$(head -n 1 $PROJECT_PATH/leaks.tmp | cut -d ':' -f 2 | sed 's/ //g')
-if [ $LEAKS -ne 0 ]; then
-    echo -e "${RED}${BOLD}fail${NC} check ./logs/fetch_routes.log"
-    is_leaking=1
-else
-    echo -e "${GREEN}${BOLD}ok${NC}"
+if [ $CHECK_LEAKS -eq 1 ]; then
+    echo -ne "${BLUE}${BOLD}>>>${NC} ${BOLD}Leaks ... ${NC}"
+    LEAKS=$(head -n 1 $PROJECT_PATH/leaks.tmp | cut -d ':' -f 2 | sed 's/ //g')
+    if [ $LEAKS -ne 0 ]; then
+        echo -e "${RED}${BOLD}fail${NC} check ./logs/fetch_routes.log"
+        CHECK_LEAKS=0
+    else
+        echo -e "${GREEN}${BOLD}ok${NC}"
+    fi
+    echo
 fi
-echo
+
 
 # get size of routes
 size=${#routes[@]}
+success_route=0
 
 echo -e "${CYAN}${BOLD}$size${NC} routes to check:"
 
@@ -140,7 +196,7 @@ do
     done
     
     size_names=$(echo $names | wc -w)
-    echo -ne "${BOLD}Testing route: ${NC}"
+    echo -ne "${NC}${BOLD}Testing route: ${NC}"
     for name in $reversed_names
     do
         echo -ne "${CYAN}$name${NC}"
@@ -159,36 +215,37 @@ do
     echo '### FT MALLOCATOR TEST ###' > ./logs/$path_names/$count.log
     echo "route is: $addresses_names" >> ./logs/$path_names/$count.log
     echo >> ./logs/$path_names/$count.log
-
-	cd $PROJECT_PATH
+    
+    cd $PROJECT_PATH
     ./malloc_test $ARGS &>> $WORK_PATH/logs/$path_names/$count.log
-	cd $WORK_PATH
-
-
+    cd $WORK_PATH
+    
+    
     rm -rf $PROJECT_PATH/addresses.tmp
     if grep -q "ERROR: UndefinedBehaviorSanitizer" ./logs/$path_names/$count.log; then
-        echo -e "${RED}fail${NC}"
-        echo -e "${RED}  >>>${NC} this malloc is not protected, check: ${BOLD}./logs/$path_names/$count.log${NC}"
+        echo -e "${RED}${BOLD}fail${NC}"
+        echo -e "${RED}${BOLD}  >>>${NC} this malloc is not protected, check: ${BOLD}./logs/$path_names/$count.log${NC}"
     else
         LEAKS=$(head -n 1 $PROJECT_PATH/leaks.tmp | cut -d ':' -f 2 | sed 's/ //g')
-        if [ $LEAKS -eq 0 ] || [ $is_leaking -eq 1 ]; then
+        if [ $LEAKS -eq 0 ] || [ $CHECK_LEAKS -eq 1 ]; then
             if [ $iteration -ne 1 ]; then
                 echo $addresses > $PROJECT_PATH/addresses.tmp
                 echo 1 > $PROJECT_PATH/iteration.tmp
                 echo "### SECOND TEST ###" >> ./logs/$path_names/$count.log
-				
-				cd $PROJECT_PATH
+                
+                cd $PROJECT_PATH
                 ./malloc_test $ARGS &>> $WORK_PATH/logs/$path_names/$count.log
-				cd $WORK_PATH
-
+                cd $WORK_PATH
+                
                 rm -rf $PROJECT_PATH/addresses.tmp $PROJECT_PATH/iteration.tmp
                 if grep -q "ERROR: UndefinedBehaviorSanitizer" ./logs/$path_names/$count.log; then
                     echo -e "${RED}${BOLD}fail${NC}"
                     echo -e "${RED}${BOLD}  >>>${NC} this malloc is not protected, check: ${BOLD}./logs/$path_names/$count.log${NC}"
                 else
                     LEAKS=$(head -n 1 $PROJECT_PATH/leaks.tmp | cut -d ':' -f 2 | sed 's/ //g')
-                    if [ $LEAKS -eq 0 ] || [ $is_leaking -eq 1 ]; then
+                    if [ $LEAKS -eq 0 ] || [ $CHECK_LEAKS -eq 1 ]; then
                         echo -e "${GREEN}${BOLD}ok${NC}"
+                        ((success_route++))
                     else
                         echo -e "${YELLOW}${BOLD}warn${NC}"
                         echo -e "${YELLOW}${BOLD}  >>>${NC} you don't free everything when this malloc crash, check: ${BOLD}./logs/$path_names/$count.log${NC}"
@@ -197,6 +254,7 @@ do
                 fi
             else
                 echo -e "${GREEN}${BOLD}ok${NC}"
+                ((success_route++))
             fi
         else
             echo -e "${YELLOW}${BOLD}warn${NC}"
@@ -207,3 +265,15 @@ do
     rm -rf $PROJECT_PATH/leaks.tmp $PROJECT_PATH/routes.tmp
 done
 rm -rf $PROJECT_PATH/malloc_test
+
+echo
+
+echo -ne "${BLUE}${BOLD}>>>${NC} ${BOLD}Result:${NC} "
+echo -ne "${CYAN}${BOLD}$success_route/$size${NC} routes are protected ..."
+
+if [ $success_route -ne $size ]; then
+    echo -e "${RED}${BOLD} fail${NC}"
+    exit 1
+else
+    echo -e "${GREEN}${BOLD}success${NC}"
+fi

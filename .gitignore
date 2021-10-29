@@ -6,3 +6,4 @@ malloc_test
 .vscode
 *.tmp
 test_bin
+config.sh
