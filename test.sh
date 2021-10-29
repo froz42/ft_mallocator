@@ -23,6 +23,12 @@ then
     exit 1
 fi
 
+# check if script is run on linux
+if [ "$(uname)" != "Linux" ]; then
+	echo "This script is only compatible with Linux"
+	exit 1
+fi
+
 # compute config
 
 # remove last / of PROJECT_PATH if exist
