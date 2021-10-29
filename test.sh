@@ -4,7 +4,7 @@
 
 PROJECT_PATH=".."
 
-ARGS="4 800 200 200 6"
+ARGS="" # your args here
 
 
 echo -ne "${CYAN}"
