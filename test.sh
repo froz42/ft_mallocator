@@ -153,17 +153,14 @@ fi
 routes=()
 readarray -t routes < $PROJECT_PATH/routes.tmp
 
-if [ $CHECK_LEAKS -eq 1 ]; then
-    echo -ne "${BLUE}${BOLD}>>>${NC} ${BOLD}Leaks ... ${NC}"
-    LEAKS=$(head -n 1 $PROJECT_PATH/leaks.tmp | cut -d ':' -f 2 | sed 's/ //g')
-    if [ $LEAKS -ne 0 ]; then
-        echo -e "${RED}${BOLD}fail${NC} check ./logs/fetch_routes.log"
-        CHECK_LEAKS=0
-    else
-        echo -e "${GREEN}${BOLD}ok${NC}"
-    fi
-    echo
+echo -ne "${BLUE}${BOLD}>>>${NC} ${BOLD}Leaks ... ${NC}"
+LEAKS=$(head -n 1 $PROJECT_PATH/leaks.tmp | cut -d ':' -f 2 | sed 's/ //g')
+if [ $LEAKS -ne 0 ]; then
+    echo -e "${RED}${BOLD}fail${NC} check ./logs/fetch_routes.log"
+else
+    echo -e "${GREEN}${BOLD}ok${NC}"
 fi
+echo
 
 
 # get size of routes
@@ -229,7 +226,7 @@ do
         echo -e "${RED}${BOLD}  >>>${NC} this malloc is not protected, check: ${BOLD}./logs/$path_names/$count.log${NC}"
     else
         LEAKS=$(head -n 1 $PROJECT_PATH/leaks.tmp | cut -d ':' -f 2 | sed 's/ //g')
-        if [ $LEAKS -eq 0 ] || [ $CHECK_LEAKS -eq 1 ]; then
+        if [ $LEAKS -eq 0 ] || [ $CHECK_LEAKS -eq 0 ]; then
             if [ $iteration -ne 1 ]; then
                 echo $addresses > $PROJECT_PATH/addresses.tmp
                 echo 1 > $PROJECT_PATH/iteration.tmp
@@ -245,7 +242,7 @@ do
                     echo -e "${RED}${BOLD}  >>>${NC} this malloc is not protected, check: ${BOLD}./logs/$path_names/$count.log${NC}"
                 else
                     LEAKS=$(head -n 1 $PROJECT_PATH/leaks.tmp | cut -d ':' -f 2 | sed 's/ //g')
-                    if [ $LEAKS -eq 0 ] || [ $CHECK_LEAKS -eq 1 ]; then
+                    if [ $LEAKS -eq 0 ] || [ $CHECK_LEAKS -eq 0 ]; then
                         echo -e "${GREEN}${BOLD}ok${NC}"
                         ((success_route++))
                     else
@@ -271,10 +268,10 @@ rm -rf $PROJECT_PATH/malloc_test
 echo
 
 echo -ne "${BLUE}${BOLD}>>>${NC} ${BOLD}Result:${NC} "
-echo -ne "${CYAN}${BOLD}$success_route/$size${NC} routes are protected ..."
+echo -ne "${CYAN}${BOLD}$success_route/$size${NC} routes are protected ... "
 
 if [ $success_route -ne $size ]; then
-    echo -e "${RED}${BOLD} fail${NC}"
+    echo -e "${RED}${BOLD}fail${NC}"
     exit 1
 else
     echo -e "${GREEN}${BOLD}success${NC}"
