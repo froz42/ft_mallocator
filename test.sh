@@ -121,9 +121,11 @@ fi
 
 echo -ne "${BLUE}${BOLD}>>>${NC} ${BOLD}Compiling ... ${NC}"
 
+cp libmallocator.a $PROJECT_PATH/libmallocator.a
 make -C $PROJECT_PATH malloc_test &> ./logs/make.log
 #clang -Wall -Werror -Wextra -fsanitize=undefined -rdynamic -g main.c -o malloc_test -L. -lmallocator
 return_value=$?
+rm -rf $PROJECT_PATH/libmallocator.a
 
 if [ $return_value -ne 0 ]; then
     echo -e "${RED}${BOLD}fail${NC} check ./logs/make.log"
