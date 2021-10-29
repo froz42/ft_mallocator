@@ -2,10 +2,26 @@
 
 #CONFIG
 
-PROJECT_PATH="."
+PROJECT_PATH=".."
 
 ARGS="4 800 200 200 6"
 
+
+echo -ne "${CYAN}"
+echo "    __  ______    __    __    ____  _________  __________  ____ "
+echo "   /  |/  /   |  / /   / /   / __ \\/ ____/   |/_  __/ __ \\/ __ \\"
+echo "  / /|_/ / /| | / /   / /   / / / / /   / /| | / / / / / / /_/ /"
+echo " / /  / / ___ |/ /___/ /___/ /_/ / /___/ ___ |/ / / /_/ / _, _/ "
+echo "/_/  /_/_/  |_/_____/_____/\\____/\\____/_/  |_/_/  \\____/_/ |_|  "
+echo -e "${NC}"
+echo 'By tmatis <tmatis@student.42.fr>'
+echo
+
+if [ ! -n "$BASH" ] ;
+then
+    echo "Please run this script using bash"
+    exit 1
+fi
 
 # compute config
 
@@ -27,21 +43,7 @@ YELLOW='\033[1;33m'
 BOLD='\033[1m'
 NC='\033[0m'
 
-echo -ne "${CYAN}"
-echo "    __  ______    __    __    ____  _________  __________  ____ "
-echo "   /  |/  /   |  / /   / /   / __ \\/ ____/   |/_  __/ __ \\/ __ \\"
-echo "  / /|_/ / /| | / /   / /   / / / / /   / /| | / / / / / / /_/ /"
-echo " / /  / / ___ |/ /___/ /___/ /_/ / /___/ ___ |/ / / /_/ / _, _/ "
-echo "/_/  /_/_/  |_/_____/_____/\\____/\\____/_/  |_/_/  \\____/_/ |_|  "
-echo -e "${NC}"
-echo 'By tmatis <tmatis@student.42.fr>'
-echo
 
-if [ ! -n "$BASH" ] ;
-then
-    echo "Please run this script using bash"
-    exit 1
-fi
 
 rm -rf ./logs
 mkdir ./logs
@@ -198,3 +200,4 @@ do
     fi
     rm -rf $PROJECT_PATH/leaks.tmp $PROJECT_PATH/routes.tmp
 done
+rm -rf $PROJECT_PATH/malloc_test
