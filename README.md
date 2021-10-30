@@ -6,16 +6,12 @@
   </a>
 
   <p align="center">
-    Test your malloc protections and leaks !
-    <br />
-    <a href="https://github.com/github_username/repo_name"><strong>Explore the docs »</strong></a>
-    <br />
-    <br />
-    <a href="https://github.com/github_username/repo_name">View Demo</a>
+    Test your allocs protections and leaks !
+    <a href="https://github.com/tmatis/ft_mallocator">View Demo</a>
     ·
-    <a href="https://github.com/github_username/repo_name/issues">Report Bug</a>
+    <a href="https://github.com/tmatis/ft_mallocator/issues">Report Bug</a>
     ·
-    <a href="https://github.com/github_username/repo_name/issues">Request Feature</a>
+    <a href="https://github.com/tmatis/ft_mallocator/issues">Request Feature</a>
   </p>
 </div>
 
@@ -27,15 +23,12 @@
   <ol>
     <li>
       <a href="#about-the-project">About The Project</a>
-      <ul>
-        <li><a href="#built-with">Built With</a></li>
-      </ul>
     </li>
     <li>
       <a href="#getting-started">Getting Started</a>
       <ul>
         <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
+        <li><a href="#quickstart">Quick start</a></li>
       </ul>
     </li>
     <li><a href="#usage">Usage</a></li>
@@ -50,60 +43,47 @@
 
 
 <!-- ABOUT THE PROJECT -->
-## About The Project
+## About The Tool
 
-[![Screenshot][screenshot]](https://github.com/tmatis/ft_mallocator/raw/master/ressources/screenshot.png)
+![screenshot](/ressources/screenshot.png?raw=true)
 
-Here's a blank template to get started: To avoid retyping too much info. Do a search and replace with your text editor for the following: `github_username`, `repo_name`, `twitter_handle`, `linkedin_username`, `email`, `email_client`, `project_title`, `project_description`
+This tool allows you to test if **every** allocs in your project are protected.
+It also checks if an alloc fail if you *free* every allocations.
 
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
-### Built With
-
-* [Next.js](https://nextjs.org/)
-* [React.js](https://reactjs.org/)
-* [Vue.js](https://vuejs.org/)
-* [Angular](https://angular.io/)
-* [Svelte](https://svelte.dev/)
-* [Laravel](https://laravel.com)
-* [Bootstrap](https://getbootstrap.com)
-* [JQuery](https://jquery.com)
+It also check leaks !
 
 <p align="right">(<a href="#top">back to top</a>)</p>
-
-
 
 <!-- GETTING STARTED -->
 ## Getting Started
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
+Here you will see how to setup this tool on a example project.
 
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.
-* npm
-  ```sh
-  npm install npm@latest -g
-  ```
+This is working out of the box on 42's VM
 
-### Installation
+* Linux
+* clang
+* llvm
 
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
+### Quickstart
+
+1. Clone the repo inside your project
    ```sh
-   git clone https://github.com/github_username/repo_name.git
+   git clone https://github.com/tmatis/ft_mallocator.git
    ```
-3. Install NPM packages
+2. Cd in directory
    ```sh
-   npm install
+   cd ./ft_mallocator
    ```
-4. Enter your API in `config.js`
-   ```js
-   const API_KEY = 'ENTER YOUR API';
+3. Execute script
+   ```sh
+   bash test.sh
    ```
+4. Follow script's instructions...
+
+TODO:more details here
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -112,7 +92,87 @@ This is an example of how to list things you need to use the software and how to
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
+Here we have an example of not well protected code:
+```c
+char *malloc_function(void)
+{
+	return (malloc(1000));
+}
+
+int main(void)
+{
+	void *ptr = malloc_function();
+	if (ptr == NULL)
+		return (1);
+	free(ptr);
+
+	void *array[10];
+
+	for (int i = 0; i < 10; i++)
+	{
+		array[i] = malloc(1000);
+		if (array[i] == NULL)
+		{
+			printf("it fail %i\n", i);
+			return (0);
+		}
+		memset(array[i], 0, 1000);
+	}
+	
+	for (int i = 0; i < 10; i++)
+		free(array[i]);
+
+	ptr = malloc_function();
+	memset(ptr, 0, 1000);
+	free(ptr);
+}
+```
+
+this exemples have many problems, let's run mallocator on it...
+![screenshot](/ressources/screenshot.png?raw=true)
+
+The first allocation is well protected nothing to say.
+The second alloction if protected but if a malloc crash not everythings is free. (At the second iteration of the for loop)
+The third allocation is not protected at all, there is no null check.
+
+Let's see a well protected example..
+
+```c
+char *malloc_function(void)
+{
+	return (malloc(1000));
+}
+
+int main(void)
+{
+	void *ptr = malloc_function();
+	if (ptr == NULL)
+		return (1);
+	free(ptr);
+
+	void *array[10];
+
+	int i = 0;
+	for (i = 0; i < 10; i++)
+	{
+		array[i] = malloc(1000);
+		if (array[i] == NULL)
+		{
+			printf("it fail %i\n", i);
+			break ;
+		}
+		memset(array[i], 0, 1000);
+	}
+	for (int j = 0; j < i; j++)
+		free(array[j]);
+
+	ptr = malloc_function();
+	if (!ptr)
+		return (1);
+	memset(ptr, 0, 1000);
+	free(ptr);
+}
+```
 
 _For more examples, please refer to the [Documentation](https://example.com)_
 
