@@ -176,6 +176,8 @@ Then we run mallocator on this code ...
 
 ![screenshot](/ressources/well_protected.png?raw=true)
 
+This code is protected.
+
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- CONTRIBUTING -->
