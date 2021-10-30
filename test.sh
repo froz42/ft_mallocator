@@ -46,6 +46,17 @@ NC='\033[0m'
 if [ ! -f "${WORK_PATH}/config.sh" ]; then
     echo -e "${BLUE}${BOLD}>>>${NC} No config file found configuring.."
     
+    echo -e "to use ft_mallocator you need to setup a few things in your makefile"
+    echo -e "to use ft_mallocator you need to setup a few things in your makefile"
+    echo -e "1. add ${UNDERLINE}${BOLD}-g${NC} to your compilation flags"
+    echo -e "CFLAGS = -Wall -Wextra -Werror ${UNDERLINE}${BOLD}-g${NC}"
+    echo -e "2. add a rule that look like this in your Makefile"
+    echo -e "${UNDERLINE}${BOLD}malloc_test:${NC} \$(OBJS) otherdispencies..."
+    echo -ne "	\$(CC) \$(CFLAGS) ${UNDERLINE}${BOLD}-fsanitize=undefined${NC}"
+    echo -ne " ${UNDERLINE}${BOLD}-rdynamic${NC} -o \$@ \${OBJS}"
+    echo -e " -L./otherlib/ -lyourlib -L. ${UNDERLINE}${BOLD}-lmallocator${NC}"
+    read -p "Press enter to continue... "
+    
     echo -e "What is your ${UNDERLINE}${BOLD}project path${NC} ? (default is '$PROJECT_PATH')"
     echo -en "${CYAN}>>> ${NC}"
     read PROJECT_PATH_TEMP
@@ -119,20 +130,34 @@ else
     echo -e "${GREEN}${BOLD}done${NC}"
 fi
 
-echo -ne "${BLUE}${BOLD}>>>${NC} ${BOLD}Compiling ... ${NC}"
-
 cp libmallocator.a $PROJECT_PATH/libmallocator.a &> ./logs/make.log
-make -C $PROJECT_PATH malloc_test &>> ./logs/make.log
-#clang -Wall -Werror -Wextra -fsanitize=undefined -rdynamic -g main.c -o malloc_test -L. -lmallocator
-return_value=$?
-rm -rf $PROJECT_PATH/libmallocator.a
 
-if [ $return_value -ne 0 ]; then
-    echo -e "${RED}${BOLD}fail${NC} check ./logs/make.log"
-    exit 1
-else
-    echo -e "${GREEN}${BOLD}done${NC}"
-fi
+while [ 1 ]
+do
+    echo -ne "${BLUE}${BOLD}>>>${NC} ${BOLD}Compiling ... ${NC}"
+    
+    make -C $PROJECT_PATH malloc_test &>> ./logs/make.log
+    return_value=$?
+    
+    if [ $return_value -ne 0 ]; then
+        echo -e "${RED}${BOLD}fail${NC} check ./logs/make.log"
+        echo -e "to use ft_mallocator you need to setup a few things in your makefile"
+        echo -e "1. add ${UNDERLINE}${BOLD}-g${NC} to your compilation flags"
+        echo -e "CFLAGS = -Wall -Wextra -Werror ${UNDERLINE}${BOLD}-g${NC}"
+        echo -e "2. add a rule that look like this in your Makefile"
+        echo -e "${UNDERLINE}${BOLD}malloc_test:${NC} \$(OBJS) otherdispencies..."
+        echo -ne "	\$(CC) \$(CFLAGS) ${UNDERLINE}${BOLD}-fsanitize=undefined${NC}"
+        echo -ne " ${UNDERLINE}${BOLD}-rdynamic${NC} -o \$@ \${OBJS}"
+        echo -e " -L./otherlib/ -lyourlib -L. ${UNDERLINE}${BOLD}-lmallocator${NC}"
+        read -p "Press enter to retry... "
+    else
+        echo -e "${GREEN}${BOLD}done${NC}"
+        break
+    fi
+    make -C $PROJECT_PATH fclean &>> ./logs/make.log
+done
+
+rm -rf $PROJECT_PATH/libmallocator.a
 
 echo -ne "${BLUE}${BOLD}>>>${NC} ${BOLD}Fetching malloc routes ... ${NC}"
 
@@ -251,11 +276,11 @@ do
                         cat $PROJECT_PATH/leaks.tmp >> ./logs/$path_names/$count.log
                         ((warn_route++))
                     fi
-					((success_route++))
+                    ((success_route++))
                 fi
             else
                 echo -e "${GREEN}${BOLD}ok${NC}"
-				((success_route++))
+                ((success_route++))
             fi
         else
             echo -e "${YELLOW}${BOLD}warn${NC}"

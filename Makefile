@@ -6,7 +6,7 @@
 #    By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/07/14 10:00:31 by tmatis            #+#    #+#              #
-#    Updated: 2021/10/29 11:41:07 by tmatis           ###   ########.fr        #
+#    Updated: 2021/10/30 12:58:31 by tmatis           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -65,7 +65,6 @@ clean:
 			@rm -rf objs
 
 fclean:		clean
-			@rm -rf $(NAME)
 
 re:			fclean all
 
