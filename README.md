@@ -43,7 +43,7 @@
 ![screenshot](/ressources/screenshot.png?raw=true)
 
 This tool allows you to test if **every** allocs in your project are protected.
-It also checks if an alloc fail if you *free* every allocations.
+It also checks if an alloc fail: if you *free* every allocations.
 
 It also check leaks !
 
