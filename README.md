@@ -1,14 +1,12 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/github_username/repo_name">
-    <img src="ressources/logo.png" alt="Logo" width="80" height="80">
+  <a href="https://github.com/tmatis/ft_mallocator">
+    <img src="ressources/logo.png" alt="Logo" width="232" height="41">
   </a>
 
-<h3 align="center">project_title</h3>
-
   <p align="center">
-    project_description
+    Test your malloc protections and leaks !
     <br />
     <a href="https://github.com/github_username/repo_name"><strong>Explore the docs »</strong></a>
     <br />
