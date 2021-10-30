@@ -247,7 +247,7 @@ do
     
     
     rm -rf $PROJECT_PATH/addresses.tmp
-    if grep -q "ERROR: UndefinedBehaviorSanitizer" ./logs/$path_names/$count.log; then
+    if grep -q "ERROR: UndefinedBehaviorSanitizer" ./logs/$path_names/$count.log || [ ! -f "$PROJECT_PATH/leaks.tmp" ]; then
         echo -e "${RED}${BOLD}fail${NC}"
         echo -e "${RED}${BOLD}  >>>${NC} this malloc is not protected, check: ${BOLD}./logs/$path_names/$count.log${NC}"
     else
