@@ -78,7 +78,8 @@ This is working out of the box on 42's VM
    ```
 4. Follow script's instructions...
 
-TODO:more details here
+### Demo video
+https://user-images.githubusercontent.com/54767855/139539158-52ab77dd-8dec-4678-9ff0-cd1dee8fe68f.mp4
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
