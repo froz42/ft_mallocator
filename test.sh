@@ -286,6 +286,8 @@ do
             echo -e "${YELLOW}${BOLD}warn${NC}"
             echo -e "${YELLOW}${BOLD}  >>>${NC} you don't free everything when this malloc crash, check: ${BOLD}./logs/$path_names/$count.log${NC}"
             cat $PROJECT_PATH/leaks.tmp >> ./logs/$path_names/$count.log
+			((warn_route++))
+			((success_route++))
         fi
     fi
     rm -rf $PROJECT_PATH/leaks.tmp $PROJECT_PATH/routes.tmp
