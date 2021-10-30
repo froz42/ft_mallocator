@@ -161,7 +161,7 @@ rm -rf $PROJECT_PATH/libmallocator.a
 echo -ne "${BLUE}${BOLD}>>>${NC} ${BOLD}Fetching malloc routes ... ${NC}"
 
 cd $PROJECT_PATH
-$(./malloc_test $ARGS &> $WORK_PATH/logs/fetch_routes.log)
+eval "./malloc_test $ARGS &> $WORK_PATH/logs/fetch_routes.log"
 cd $WORK_PATH
 
 echo -e "${GREEN}${BOLD}done${NC}"
@@ -242,7 +242,7 @@ do
     echo >> ./logs/$path_names/$count.log
     
     cd $PROJECT_PATH
-    $(./malloc_test $ARGS &>> $WORK_PATH/logs/$path_names/$count.log)
+    eval "./malloc_test $ARGS &>> $WORK_PATH/logs/$path_names/$count.log"
     cd $WORK_PATH
     
     
@@ -259,7 +259,7 @@ do
                 echo "### SECOND TEST ###" >> ./logs/$path_names/$count.log
                 
                 cd $PROJECT_PATH
-                $(./malloc_test $ARGS &>> $WORK_PATH/logs/$path_names/$count.log)
+                eval "./malloc_test $ARGS &>> $WORK_PATH/logs/$path_names/$count.log"
                 cd $WORK_PATH
                 
                 rm -rf $PROJECT_PATH/addresses.tmp $PROJECT_PATH/iteration.tmp
