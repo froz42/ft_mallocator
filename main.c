@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/26 19:48:25 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/30 13:25:33 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/30 15:12:26 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,11 @@ char *other_func(void)
 
 int main(void)
 {
+	void *ptr = malloc_function();
+	if (ptr == NULL)
+		return (1);
+	free(ptr);
+
 	void *array[10];
 
 	for (int i = 0; i < 10; i++)
@@ -33,9 +38,16 @@ int main(void)
 		array[i] = malloc(1000);
 		if (array[i] == NULL)
 		{
-			printf("Error\n");
+			printf("it fail %i\n", i);
 			return (0);
 		}
 		memset(array[i], 0, 1000);
 	}
+	
+	for (int i = 0; i < 10; i++)
+		free(array[i]);
+
+	ptr = malloc_function();
+	memset(ptr, 0, 1000);
+	free(ptr);
 }
