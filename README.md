@@ -7,8 +7,6 @@
 
   <p align="center">
     Test your allocs protections and leaks !
-    <a href="https://github.com/tmatis/ft_mallocator">View Demo</a>
-    ·
     <a href="https://github.com/tmatis/ft_mallocator/issues">Report Bug</a>
     ·
     <a href="https://github.com/tmatis/ft_mallocator/issues">Request Feature</a>
@@ -174,7 +172,9 @@ int main(void)
 }
 ```
 
-_For more examples, please refer to the [Documentation](https://example.com)_
+Then we run mallocator on this code ...
+
+![screenshot](/ressources/well_protected.png?raw=true)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
