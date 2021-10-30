@@ -47,7 +47,6 @@ if [ ! -f "${WORK_PATH}/config.sh" ]; then
     echo -e "${BLUE}${BOLD}>>>${NC} No config file found configuring.."
     
     echo -e "to use ft_mallocator you need to setup a few things in your makefile"
-    echo -e "to use ft_mallocator you need to setup a few things in your makefile"
     echo -e "1. add ${UNDERLINE}${BOLD}-g${NC} to your compilation flags"
     echo -e "CFLAGS = -Wall -Wextra -Werror ${UNDERLINE}${BOLD}-g${NC}"
     echo -e "2. add a rule that look like this in your Makefile"
