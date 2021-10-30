@@ -6,7 +6,7 @@
 #    By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/07/14 10:00:31 by tmatis            #+#    #+#              #
-#    Updated: 2021/10/30 12:58:31 by tmatis           ###   ########.fr        #
+#    Updated: 2021/10/30 15:16:32 by tmatis           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -30,7 +30,7 @@ SRCS_PATH		= ./alloc_hook
 
 SRCS			= alloc_hook.c utils_hook.c alloc_list.c alloc_vector.c
 
-SRCS_TEST		= main.c
+SRCS_TEST		= demo_main.c
 
 ################################################################################
 #                                  Makefile  objs                              #
