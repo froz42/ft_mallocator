@@ -175,6 +175,8 @@ Then we run mallocator on this code ...
 
 This code is protected.
 
+You can see how it is working behind the scene ![here](/how_it_work.md).
+
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- CONTRIBUTING -->
