@@ -20,7 +20,7 @@
   <summary>Table of Contents</summary>
   <ol>
     <li>
-      <a href="#about-the-project">About The Project</a>
+      <a href="#about-the-tool">About The Tool</a>
     </li>
     <li>
       <a href="#getting-started">Getting Started</a>
@@ -37,7 +37,7 @@
 
 
 
-<!-- ABOUT THE PROJECT -->
+<!-- About The Tool -->
 ## About The Tool
 
 ![screenshot](/ressources/screenshot.png?raw=true)
