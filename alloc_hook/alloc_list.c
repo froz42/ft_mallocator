@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/26 21:01:48 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/30 13:47:32 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/30 13:48:30 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,7 +115,7 @@ void print_alloc_list(t_alloc_list *list, int fd)
 	dprintf(fd, "|                                LEAKS SUMMARY\
                                 |\n");
 	dprintf(fd, "-------------------------------------------------------------------------------\n");
-	dprintf(fd, "|%-25s|%-25s|%-25s|\n", "route", "allocated size", "iteration");
+	dprintf(fd, "|%-25s|%-25s|%-25s|\n", "route", "allocated size", "count");
 	dprintf(fd, "-------------------------------------------------------------------------------\n");
 	for (size_t i = 0; i < vector.size; i++)
 	{
