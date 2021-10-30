@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/25 13:28:09 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/29 21:24:24 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/30 13:48:04 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,7 @@ void at_exit_hook(void)
 			exit(EXIT_FAILURE);
 		}
 		print_alloc_vector(&g_alloc_vector, routes_fd);
+		clear_alloc_vector(&g_alloc_vector);
 	}
 
 	int leaks_fd = open(LEAK_PATH, O_WRONLY | O_CREAT | O_TRUNC, 0644);
@@ -67,6 +68,7 @@ void at_exit_hook(void)
 		exit(EXIT_FAILURE);
 	}
 	print_alloc_list(g_alloc_list, leaks_fd);
+	clear_alloc_list(&g_alloc_list);
 }
 
 void get_backtrace(void *trace[])
@@ -131,11 +133,15 @@ void *fetch_mode(size_t size, void *route[20])
 	{
 		t_alloc alloc;
 
+		alloc.size = size;
 		route_copy(alloc.route, route);
 		push_back_vector(&g_alloc_vector, &alloc);
 	}
 	else
+	{
 		found->iteration++;
+		found->size += size;
+	}
 	return (result);
 }
 

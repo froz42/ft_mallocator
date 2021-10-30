@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/26 22:32:22 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/27 17:16:12 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/30 13:30:18 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ void push_back_vector(t_alloc_vector *alloc_vector, t_alloc *alloc)
 		alloc_vector->data[alloc_vector->size].route[i] = alloc->route[i];
 	alloc_vector->data[alloc_vector->size].route[i] = NULL;
 	alloc_vector->data[alloc_vector->size].iteration = 1;
+	alloc_vector->data[alloc_vector->size].size = alloc->size;
 	alloc_vector->size++;
 }
 
@@ -58,6 +59,11 @@ t_alloc	*find_alloc_vector(t_alloc_vector *alloc_vector, void *route[])
 			return (&alloc_vector->data[i]);
 	}
 	return (NULL);
+}
+
+void clear_alloc_vector(t_alloc_vector *alloc_vector)
+{
+	free(alloc_vector->data);
 }
 
 void print_alloc_vector(t_alloc_vector *alloc_vector, int fd)

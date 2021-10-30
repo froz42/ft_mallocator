@@ -182,6 +182,7 @@ echo -ne "${BLUE}${BOLD}>>>${NC} ${BOLD}Leaks ... ${NC}"
 LEAKS=$(head -n 1 $PROJECT_PATH/leaks.tmp | cut -d ':' -f 2 | sed 's/ //g')
 if [ $LEAKS -ne 0 ]; then
     echo -e "${RED}${BOLD}fail${NC} check ./logs/fetch_routes.log"
+	cat $PROJECT_PATH/leaks.tmp >> ./logs/fetch_routes.log
 else
     echo -e "${GREEN}${BOLD}ok${NC}"
 fi

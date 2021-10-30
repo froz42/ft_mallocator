@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/26 20:54:59 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/29 21:17:19 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/30 13:07:33 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ void add_alloc_list(t_alloc_list **list, void *ptr, size_t size, void * const tr
 void remove_alloc_list(t_alloc_list **list, void *ptr);
 size_t size_alloc_list(t_alloc_list *list);
 void print_alloc_list(t_alloc_list *list, int fd);
+void clear_alloc_list(t_alloc_list **list);
 
 
 #endif
