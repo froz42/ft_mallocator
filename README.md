@@ -52,11 +52,13 @@ It also check leaks !
 <!-- GETTING STARTED -->
 ## Getting Started
 
-Here you will see how to setup this tool on a example project.
+Here, you will see how to setup this tool in a example project.
 
 ### Prerequisites
 
 This is working out of the box on 42's VM
+
+If your are not on the VM you will need those installed on your system.
 
 * Linux
 * clang
