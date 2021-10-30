@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/26 21:01:48 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/30 13:48:30 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/10/30 13:55:54 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,7 +124,7 @@ void print_alloc_list(t_alloc_list *list, int fd)
 		dprintf(fd, "|%-25s|%-25zi|%-25zi|\n", get_func_name(alloc.route[i++]), alloc.size, alloc.iteration);
 		for (; alloc.route[i]; i++)
 			dprintf(fd, "|%-25s|%-25s|%-25s|\n", get_func_name(alloc.route[i]), "", "");
+		dprintf(fd, "-------------------------------------------------------------------------------\n");
 	}
-	dprintf(fd, "-------------------------------------------------------------------------------\n");
 	clear_alloc_vector(&vector);
 }
