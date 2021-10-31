@@ -60,13 +60,14 @@ This is working out of the box on 42's VM
 
 If your are not on the VM you will need those installed on your system.
 
+**Your CC must be clang**
+
 * Linux
 * clang
 * llvm
 
 ### Quickstart
 
-**Your CC must be clang**
 
 1. Clone the repo inside your project
    ```sh
