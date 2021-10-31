@@ -66,6 +66,8 @@ If your are not on the VM you will need those installed on your system.
 
 ### Quickstart
 
+**Your CC must be clang**
+
 1. Clone the repo inside your project
    ```sh
    git clone https://github.com/tmatis/ft_mallocator.git
