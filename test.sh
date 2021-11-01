@@ -171,7 +171,8 @@ echo
 
 if [ ! -f "$PROJECT_PATH/routes.tmp" ]; then
     echo -e "${BOLD}Fail to hook any malloc, please remove -fsanitize=address${NC}"
-    exit 0
+	rm -rf $PROJECT_PATH/*.tmp
+    exit 1
 fi
 
 routes=()
@@ -195,6 +196,7 @@ warn_route=0
 
 if [ $size -eq 0 ]; then
 	echo -e "${BOLD}Fail to process routes, please set -rdynamic flag at linking${NC}"
+	rm -rf $PROJECT_PATH/*.tmp
 	exit 1
 fi
 
@@ -315,4 +317,3 @@ else
     fi
 fi
 
-#rm -rf $PROJECT_PATH/*.tmp
