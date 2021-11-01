@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/25 13:28:09 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/30 13:48:04 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/11/01 22:27:52 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ void get_backtrace(void *trace[])
 
 	size = backtrace(array, 103);
 	size_t y = 0;
-	for (size_t i = 2; i < (size - 2); i++)
+	for (size_t i = 2; i < size - 2 && trace[i] < (void *)&_end; i++)
 	{
 		trace[y++] = array[i];
 	}
