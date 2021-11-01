@@ -170,7 +170,7 @@ echo
 # check if $PROJECT_PATH/routes.tmp exist
 
 if [ ! -f "$PROJECT_PATH/routes.tmp" ]; then
-    echo -e "${BOLD}Fail to hook malloc, remove -fsanitize=address and use -fsanitize=undefined${NC}"
+    echo -e "${BOLD}Fail to hook any malloc, please remove -fsanitize=address${NC}"
     exit 0
 fi
 
