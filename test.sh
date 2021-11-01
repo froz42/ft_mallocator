@@ -170,8 +170,9 @@ echo
 # check if $PROJECT_PATH/routes.tmp exist
 
 if [ ! -f "$PROJECT_PATH/routes.tmp" ]; then
-    echo -e "${BOLD}no routes to fetch, if this is a bug report to tmatis${NC}"
-    exit 0
+    echo -e "${BOLD}Fail to hook any malloc, please do not use -fsanitize=address (use -fsanitize=undefined)${NC}"
+	rm -rf $PROJECT_PATH/*.tmp
+    exit 1
 fi
 
 routes=()
@@ -192,6 +193,12 @@ echo
 size=${#routes[@]}
 success_route=0
 warn_route=0
+
+if [ $size -eq 0 ]; then
+	echo -e "${BOLD}Fail to process routes, please set -rdynamic flag at linking${NC}"
+	rm -rf $PROJECT_PATH/*.tmp
+	exit 1
+fi
 
 echo -e "${CYAN}${BOLD}$size${NC} routes to check:"
 
@@ -309,3 +316,4 @@ else
         echo -e "${GREEN}${BOLD}success${NC}"
     fi
 fi
+

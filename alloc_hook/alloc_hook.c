@@ -6,7 +6,7 @@
 /*   By: tmatis <tmatis@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/25 13:28:09 by tmatis            #+#    #+#             */
-/*   Updated: 2021/10/30 13:48:04 by tmatis           ###   ########.fr       */
+/*   Updated: 2021/11/01 23:19:37 by tmatis           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,10 +77,28 @@ void get_backtrace(void *trace[])
 	size_t size;
 
 	size = backtrace(array, 103);
+
+	// search main pos
+	
+	size_t i;
+	for (i = 0; i < size; i++)
+	{
+		if (strcmp(get_func_name(array[i]), "main") == 0)
+			break;
+	}
+
+	if (i == size)
+	{
+		dprintf(STDERR_FILENO, "can't find main in backtrace, did you not setup -rdynamic flag ?\n");
+		exit(EXIT_FAILURE);
+	}
+	size_t main_pos = size - i - 1;
+
 	size_t y = 0;
-	for (size_t i = 2; i < (size - 2); i++)
+	for (size_t i = 2; i < size - main_pos; i++)
 	{
 		trace[y++] = array[i];
+		printf("%p:%s\n", array[i], get_func_name(array[i]));
 	}
 	trace[y] = NULL;
 }
