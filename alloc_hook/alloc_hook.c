@@ -96,10 +96,7 @@ void get_backtrace(void *trace[])
 
 	size_t y = 0;
 	for (size_t i = 2; i < size - main_pos; i++)
-	{
 		trace[y++] = array[i];
-		printf("%p:%s\n", array[i], get_func_name(array[i]));
-	}
 	trace[y] = NULL;
 }
 
