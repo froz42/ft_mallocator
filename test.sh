@@ -53,7 +53,7 @@ if [ ! -f "${WORK_PATH}/config.sh" ]; then
     echo -e "${UNDERLINE}${BOLD}malloc_test:${NC} \$(OBJS) otherdispencies..."
     echo -ne "	\$(CC) \$(CFLAGS) ${UNDERLINE}${BOLD}-fsanitize=undefined${NC}"
     echo -ne " ${UNDERLINE}${BOLD}-rdynamic${NC} -o \$@ \${OBJS}"
-    echo -e " -L./otherlib/ -lyourlib -L. ${UNDERLINE}${BOLD}-lmallocator${NC}"
+    echo -e " -L./otherlib/ -lyourlib ${UNDERLINE}${BOLD}-L. -lmallocator${NC}"
     read -p "Press enter to continue... "
     
     echo -e "What is your ${UNDERLINE}${BOLD}project path${NC} ? (default is '$PROJECT_PATH')"
@@ -147,7 +147,7 @@ do
         echo -e "${UNDERLINE}${BOLD}malloc_test:${NC} \$(OBJS) otherdispencies..."
         echo -ne "	\$(CC) \$(CFLAGS) ${UNDERLINE}${BOLD}-fsanitize=undefined${NC}"
         echo -ne " ${UNDERLINE}${BOLD}-rdynamic${NC} -o \$@ \${OBJS}"
-        echo -e " -L./otherlib/ -lyourlib -L. ${UNDERLINE}${BOLD}-lmallocator${NC}"
+    	echo -e " -L./otherlib/ -lyourlib ${UNDERLINE}${BOLD}-L. -lmallocator${NC}"
         read -p "Press enter to retry... "
     else
         echo -e "${GREEN}${BOLD}done${NC}"
@@ -170,7 +170,7 @@ echo
 # check if $PROJECT_PATH/routes.tmp exist
 
 if [ ! -f "$PROJECT_PATH/routes.tmp" ]; then
-    echo -e "${BOLD}Fail to hook any malloc, please do not use -fsanitize=address (use -fsanitize=undefined)${NC}"
+    echo -e "${BOLD}Fail to hook any malloc (check ./logs/fetch_routes.log), please do not use -fsanitize=address (use -fsanitize=undefined)${NC}"
 	rm -rf $PROJECT_PATH/*.tmp
     exit 1
 fi
