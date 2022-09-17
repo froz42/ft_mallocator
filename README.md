@@ -56,15 +56,15 @@ Here, you will see how to setup this tool in a example project.
 
 ### Prerequisites
 
-This is working out of the box on 42's VM
+This is working out of the box on 42's VM.
 
-If your are not on the VM you will need those installed on your system.
+**You must compile using clang**
 
-**Your CC must be clang**
+If your are not on the VM you will need those installed on your system :
 
-* Linux
-* clang
-* llvm
+```
+sudo apt install make clang
+```
 
 ### Quickstart
 
