@@ -43,24 +43,24 @@
 ![screenshot](/ressources/screenshot.png?raw=true)
 
 This tool allows you to test if **every** allocs in your project are protected.
-It also checks if an alloc fail: if you *free* every allocations.
+It also checks if an alloc fail: if you *free* every allocation.
 
-It also check leaks !
+It also checks leaks !
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- GETTING STARTED -->
 ## Getting Started
 
-Here, you will see how to setup this tool in a example project.
+Here, you will see how to setup this tool in an example project.
 
 ### Prerequisites
 
-This is working out of the box on 42's VM.
+This is working out of the box on 42's dump.
 
 **You must compile using clang**
 
-If your are not on the VM you will need those installed on your system :
+At home, you will need those installed on your system :
 
 ```
 sudo apt install make clang
@@ -129,14 +129,14 @@ int main(void)
 }
 ```
 
-this exemples have many problems, let's run mallocator on it...
+This example have many problems, let's run mallocator on it :
 ![screenshot](/ressources/screenshot.png?raw=true)
 
-The first allocation is well protected nothing to say.
-The second alloction if protected but if a malloc crash not everythings is free. (At the second iteration of the for loop)
+The first allocation is well protected, nothing to say.
+The second allocation is protected but if a malloc fails, not everything is freed (the program returns without freeing the previous allocations).
 The third allocation is not protected at all, there is no null check.
 
-Let's see a well protected example..
+Let's see a well protected example:
 
 ```c
 char *malloc_function(void)
@@ -175,13 +175,13 @@ int main(void)
 }
 ```
 
-Then we run mallocator on this code ...
+Then we run mallocator on this code :
 
 ![screenshot](/ressources/well_protected.png?raw=true)
 
 This code is protected.
 
-You can see how it is working behind the scene ![here](/how_it_work.md).
+You can see how it is working behind the scene [here](/how_it_work.md).
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
