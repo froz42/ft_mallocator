@@ -6,16 +6,6 @@ PROJECT_PATH=".."
 ARGS=""
 CHECK_LEAKS=1
 
-echo -ne "${CYAN}"
-echo "    __  ______    __    __    ____  _________  __________  ____ "
-echo "   /  |/  /   |  / /   / /   / __ \\/ ____/   |/_  __/ __ \\/ __ \\"
-echo "  / /|_/ / /| | / /   / /   / / / / /   / /| | / / / / / / /_/ /"
-echo " / /  / / ___ |/ /___/ /___/ /_/ / /___/ ___ |/ / / /_/ / _, _/ "
-echo "/_/  /_/_/  |_/_____/_____/\\____/\\____/_/  |_/_/  \\____/_/ |_|  "
-echo -e "${NC}"
-echo 'By tmatis <tmatis@student.42.fr>'
-echo
-
 if [ ! -n "$BASH" ] ;
 then
     echo "Please run this script using bash"
@@ -33,6 +23,7 @@ WORK_PATH=$(pwd)
 
 # COLORS VAR
 
+
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 BLUE='\033[1;34m'
@@ -42,6 +33,11 @@ UNDERLINE='\033[4m'
 BOLD='\033[1m'
 NC='\033[0m'
 
+echo
+echo -e "${RED}${BOLD}[!!!!]${NC} this project is deprecated and no longer maintained"
+echo -e "please use ${UNDERLINE}${BOLD}funcheck${NC} instead, it easier to use"
+echo -e "${UNDERLINE}${BOLD}https://github.com/tmatis/funcheck"
+echo
 # check if config file exist
 if [ ! -f "${WORK_PATH}/config.sh" ]; then
     echo -e "${BLUE}${BOLD}>>>${NC} No config file found configuring.."

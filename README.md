@@ -1,8 +1,14 @@
 <!-- PROJECT LOGO -->
+
+# THIS PROJECT IS DEPRECATED AND NO LONGER MAINTAINED
+
+
+This project is deprecated in profit of [funcheck](https://github.com/tmatis/funcheck) which is more easy to use and more powerful.
+
 <br />
 <div align="center">
   <a href="https://github.com/tmatis/ft_mallocator">
-    <img src="ressources/logo.png" alt="Logo" width="232" height="41">
+    <img src="ressources/logo.png" alt="Logo" width="232" height="41" />
   </a>
 
   <p align="center">
@@ -12,6 +18,9 @@
     <a href="https://github.com/tmatis/ft_mallocator/issues">Request Feature</a>
   </p>
 </div>
+
+
+
 
 
 
